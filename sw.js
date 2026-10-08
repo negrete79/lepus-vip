@@ -1,9 +1,9 @@
 /* ============================================================
    LEPUS — Service Worker (cache offline)
    Ao atualizar o app no futuro, mude a versão abaixo
-   (lepus-v18 → lepus-v19) para o celular baixar a nova versão.
+   (lepus-v19 → lepus-v20) para o celular baixar a nova versão.
    ============================================================ */
-const CACHE = 'lepus-v19';
+const CACHE = 'lepus-v20';
 const SHELL = [
   './',
   './index.html',
