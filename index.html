@@ -266,11 +266,30 @@ table.r-items td{padding:6px 2px;border-bottom:1px dashed var(--line);vertical-a
 .vip-card{background:#FFFDF6;border-radius:20px;padding:24px;max-width:380px;width:100%;text-align:center;max-height:90dvh;overflow-y:auto}
 .vip-id{font-family:'Fraunces',serif;font-size:26px;font-weight:650;letter-spacing:1px;background:var(--bg);border:1.5px dashed var(--deep);border-radius:12px;padding:10px;margin:12px 0}
 
+/* ---------- MINI LIVRO VIP ---------- */
+.livro-card{background:var(--deep);color:#F4EFE4;border-radius:18px;padding:18px;margin-top:14px;display:flex;gap:14px;align-items:center;cursor:pointer}
+.livro-card svg{flex:none;color:#E8A66B}
+.livro-card b{display:block;font-family:'Fraunces',serif;font-size:17px;font-weight:650}
+.livro-card span{font-size:12.5px;color:rgba(244,239,228,.7);display:block;margin-top:2px}
+.pagina{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px 18px}
+.pagina h2{font-size:20px;font-weight:650;margin-bottom:4px}
+.pagina .p-sub{font-size:12px;color:var(--muted);margin-bottom:14px}
+.pagina h3{font-size:15.5px;font-weight:650;color:var(--green);margin:16px 0 6px}
+.pagina p,.pagina li{font-size:14px;line-height:1.6}
+.pagina ul{padding-left:18px;margin:6px 0}
+.pagina li{margin-bottom:6px}
+.pagina table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}
+.pagina th{background:var(--deep);color:#F4EFE4;padding:7px 8px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+.pagina td{padding:7px 8px;border-bottom:1px solid var(--line)}
+.pagina .destaque{background:var(--green-soft);border:1px solid #CFDDC4;border-radius:12px;padding:12px 14px;margin:12px 0;font-size:13.5px;font-weight:600;line-height:1.5}
+.pag-nav{display:flex;gap:10px;margin-top:16px}
+.pag-nav .btn{font-size:13px;min-height:44px}
+
 @media (min-width:700px){
   .sheet{border-radius:22px;bottom:40px;max-height:82dvh}
 }
 
-/* ---------- DESKTOP: só em telas grandes COM mouse ---------- */
+/* ---------- DESKTOP: só telas grandes COM mouse ---------- */
 @media (min-width:1024px) and (hover:hover) and (pointer:fine){
   body{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:280px 1fr;gap:0;min-height:100vh;background:#F4EFE4}
   header{grid-column:1/-1}
@@ -308,7 +327,7 @@ nav.menu-lateral{display:none}
 <nav id="tabbar" class="menu-inferior"></nav>
 <div id="toastRoot"></div>
 
-<!-- Modal VIP: ID do cliente + código de liberação -->
+<!-- Modal VIP -->
 <div id="vipBox">
   <div class="vip-card">
     <h3 style="font-family:'Fraunces',serif;font-size:21px">👑 Acesso VIP Lepus</h3>
@@ -358,11 +377,6 @@ const vendaTotal = v => v.itens.reduce((s,i)=> s + (Number(i.qtd)||0)*(Number(i.
 
 /* ============================================================
    FREEMIUM · TRIAL 7 DIAS · VIP — validação local (offline)
-   - Trial: acesso total por 7 dias desde a 1ª abertura.
-   - VIP: 'lepus_vip'==='1' → acesso total permanente.
-   - Código LIBERA-XXXX-XXXX derivado do ID do cliente
-     (mesmo algoritmo do painel.html).
-   - Códigos universais embutidos abaixo (base64).
    ============================================================ */
 const SENHA_MESTRA = 'negret2026';
 const RACAS_PREMIUM = ['Nova Zelândia Branco','Nova Zelândia Azul','Nova Zelândia Vermelho','Gigante de Flandres'];
@@ -392,7 +406,7 @@ function gerarIdCliente(){
 function codigoEsperadoPara(id){
   return 'LIBERA-' + btoa(id + SENHA_MESTRA).substring(0,4).toUpperCase() + '-' + btoa(id).substring(2,6).toUpperCase();
 }
-/* Códigos universais (equivalente ao antigo vip-codes.js, agora embutido):
+/* Códigos universais embutidos:
    LNPREM-MARIA-8214 · LNPREM-JOAO-4692 · LNPREM-NEGRET-002147 */
 const _cx = ["TE5QUkVNLU1BUklBLTgyMTQ=","TE5QUkVNLUpPQU8tNDY5Mg==","TE5QUkVNLU5FR1JFVC0wMDIxNDc="];
 function codigoUniversalValido(c){
@@ -469,7 +483,6 @@ document.addEventListener('click', e => {
   const t = e.target && e.target.closest && e.target.closest('.vip-locked');
   if(t){ e.preventDefault(); e.stopPropagation(); abrirVipModal(); }
 }, true);
-/* Link mágico: ?vip=LIBERA-XXXX-XXXX ativa automaticamente */
 (function(){
   try{
     const p = new URLSearchParams(location.search);
@@ -523,19 +536,8 @@ const bunnySVG = cls => `<svg class="bunny ${cls||''}" viewBox="0 0 96 96" fill=
 
 /* ---------- Predefinidos ---------- */
 const RACAS_BASE = [
-  'Nova Zelândia Branco',
-  'Nova Zelândia Vermelho',
-  'Nova Zelândia Preto',
-  'Nova Zelândia Azul',
-  'Nova Zelândia Broken',
-  'Californiano',
-  'Branco de Vila Real',
-  'Chinchila',
-  'Gigante de Flandres',
-  'Angorá',
-  'Rex',
-  'Belo Holandês',
-  'Mestiço'
+  'Nova Zelândia Branco','Nova Zelândia Vermelho','Nova Zelândia Preto','Nova Zelândia Azul','Nova Zelândia Broken',
+  'Californiano','Branco de Vila Real','Chinchila','Gigante de Flandres','Angorá','Rex','Belo Holandês','Mestiço'
 ];
 const RACA_INFO = {
   'Nova Zelândia Branco':   'O mais famoso: todo branco, olho vermelho/rosa',
@@ -620,9 +622,6 @@ function alvoDesc(s){
 
 /* ============================================================
    ALARME OFFLINE — @capacitor/local-notifications
-   Toca com APP FECHADO e TELA APAGADA (allowWhileIdle + canal 5).
-   localStorage["tarefas"]:
-   { id, nome, data, hora, repetir, feita, alarmeTocou, notifId, tipo, coelhoId }
    ============================================================ */
 const TAREFAS_KEY = 'tarefas';
 function tarefasGet(){
@@ -892,10 +891,13 @@ function renderSidebar(){
     <div class="m-sub">Lepus Negret's · Cunicultura</div>
     ${TABS.map(t => `<button class="m-item ${state.tab===t.id?'on':''}" data-tab="${t.id}">${ic(t.icon,20)}<span>${t.label}</span></button>`).join('')}
     <div class="m-sep"></div>
+    <button class="m-item" id="mLivro">${ic('db',20)}<span>Mini Livro</span></button>
     <button class="m-item" id="mPerfil">${ic('gear',20)}<span>Perfil</span></button>
     <div class="m-sep"></div>
     <div class="m-vip">${isVip() ? '👑 VIP ativo' : (dT<=7 ? '🎁 Trial: ' + Math.ceil(7-dT) + ' dia(s)' : '⏰ Trial encerrado')}</div>`;
   $$('#menuLat [data-tab]').forEach(b => b.onclick = () => { state.tab = b.dataset.tab; render(); window.scrollTo(0,0); });
+  const ml = $('#mLivro');
+  if(ml) ml.onclick = () => { state.tab = 'painel'; render(); setTimeout(() => abrirLivro(0), 100); };
   const pf = $('#mPerfil');
   if(pf) pf.onclick = () => sheetConfig();
 }
@@ -1065,6 +1067,13 @@ function viewPainel(){
   $$('#view .gest-row').forEach(r => r.onclick = () => sheetGestDet(r.dataset.id));
   $$('#view .row').forEach(r => r.onclick = () => sheetRecibo(r.dataset.id));
   $$('#view [data-tid]').forEach(r => r.onclick = () => { state.tab='manejo'; state.msub='tarefas'; render(); });
+
+  const cardLivro = document.createElement('button');
+  cardLivro.className = 'livro-card';
+  cardLivro.style.cssText = 'width:100%;text-align:left';
+  cardLivro.innerHTML = `${ic('db',28)}<span style="flex:1"><b>👑 Mini Livro do Criador</b><span>${temAcesso() ? 'Guia NZ, Flandres, reprodução e venda' : 'Capítulo 1 grátis — resto no VIP'}</span></span>${ic('plus',18)}`;
+  cardLivro.onclick = () => abrirLivro(0);
+  $('#view').appendChild(cardLivro);
 }
 
 /* ============================================================
@@ -2244,7 +2253,7 @@ function logoPDF(cx, cy, r){
   c += `q ${PC.carrot} rg ${r2(cx-2.3*s)} ${r2(cy-8*s)} m ${r2(cx+2.3*s)} ${r2(cy-8*s)} l ${r2(cx)} ${r2(cy-10.6*s)} l h f Q\n`;
   return c;
 }
-const linhaAnimal = a => [a.raca, a.sexo==='M' ? 'Macho' : 'Fêmea', a.idadeTxt, a.peso ? fmtKg(a.peso) : null].filter(Boolean).join('  ·  ');
+const linhaAnimal = a => [a.raca, a.sexo==='M'?'Macho':'Fêmea', a.idadeTxt, a.peso ? fmtKg(a.peso) : null].filter(Boolean).join('  ·  ');
 
 function buildVendaPdf(v){
   const S = db.settings, W = 595.28, H = 841.89, M = 52, XM = W - M;
@@ -2423,6 +2432,7 @@ function sheetConfig(){
       <div class="stbox" id="vipStatusBox"></div>
       <div class="clist">
         <button id="cVip">${ic('sparkle',19)}<span>Gerenciar acesso VIP<small>Ver seu ID, pedir liberação ou digitar código</small></span></button>
+        <button id="cLivro">${ic('db',19)}<span>Mini Livro do Criador<small>${temAcesso() ? 'Abrir capítulos' : 'Capítulo 1 grátis · resto no VIP'}</small></span></button>
       </div>
 
       <div class="sec-t">Alertas</div>
@@ -2459,6 +2469,7 @@ function sheetConfig(){
       <input type="file" id="cFile" accept=".json,application/json" style="display:none">
     </div>`);
 
+  /* Status VIP/trial */
   const vsb = sh.querySelector('#vipStatusBox');
   const dT = getDias();
   vsb.innerHTML = isVip()
@@ -2482,6 +2493,7 @@ function sheetConfig(){
   sh.querySelector('#cSomTest').onclick = () => { tocarAlarme(); };
 
   sh.querySelector('#cVip').onclick = () => { sh.close(); abrirVipModal(); };
+  sh.querySelector('#cLivro').onclick = () => { sh.close(); abrirLivro(0); };
 
   sh.querySelector('#rcAdd').onclick = () => {
     const inp = sh.querySelector('#rcNova');
@@ -2653,6 +2665,228 @@ function seedExample(){
     venda(5, 9, 'Frigorífico Boa Vista', [{desc:'Carcaça congelada',qtd:15,un:'kg',preco:25}], 0, 'A prazo')
   );
   save();
+}
+
+/* ============================================================
+   PWA — fallback em arquivo local + service worker
+   ============================================================ */
+function makeIcon(S, maskable){
+  const c = document.createElement('canvas'); c.width = c.height = S;
+  const x = c.getContext('2d');
+  x.fillStyle = '#1E3A26'; x.fillRect(0,0,S,S);
+  const k = maskable ? 0.68 : 0.92;
+  x.save();
+  x.translate(S/2, S/2); x.scale(k, k); x.translate(-256, -285);
+  x.fillStyle = '#F4EFE4';
+  const ear = (cx, rot) => { x.save(); x.translate(cx, 205); x.rotate(rot);
+    x.beginPath(); x.ellipse(0,0,54,112,0,0,7); x.fill(); x.restore(); };
+  ear(210, -0.24); ear(302, 0.24);
+  x.beginPath(); x.ellipse(256, 356, 130, 120, 0, 0, 7); x.fill();
+  x.fillStyle = '#1E3A26';
+  [[210,338],[302,338]].forEach(([ex,ey]) => { x.beginPath(); x.ellipse(ex, ey, 11, 14, 0, 0, 7); x.fill(); });
+  x.fillStyle = '#D96E30';
+  x.beginPath(); x.moveTo(256, 392); x.lineTo(243, 374); x.lineTo(269, 374); x.closePath(); x.fill();
+  x.restore();
+  return c.toDataURL('image/png');
+}
+function setupPWA(){
+  if(location.protocol === 'file:'){
+    try{
+      document.querySelectorAll('link[rel=manifest]').forEach(l => l.remove());
+      const t = document.createElement('link');
+      t.rel = 'apple-touch-icon'; t.href = makeIcon(180);
+      document.head.appendChild(t);
+      const man = { name:'Lepus — Cunicultura', short_name:'Lepus',
+        description:'Criação, manejo, abates e vendas para cunicultores. Funciona offline.',
+        start_url:'.', display:'standalone', background_color:'#F4EFE4', theme_color:'#1E3A26',
+        icons:[ {src:makeIcon(192), sizes:'192x192', type:'image/png', purpose:'any'},
+                {src:makeIcon(512), sizes:'512x512', type:'image/png', purpose:'any'},
+                {src:makeIcon(512, true), sizes:'512x512', type:'image/png', purpose:'maskable'} ] };
+      const l = document.createElement('link');
+      l.rel = 'manifest';
+      l.href = 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify(man));
+      document.head.appendChild(l);
+    }catch(e){}
+  }
+  if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    });
+  }
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault(); window._installEvt = e; renderHeader();
+  });
+  window.addEventListener('appinstalled', () => {
+    window._installEvt = null; toast('Lepus instalado no aparelho'); renderHeader();
+  });
+}
+function tentarInstalar(){
+  if(window._installEvt){
+    window._installEvt.prompt();
+    window._installEvt.userChoice.finally(() => { window._installEvt = null; renderHeader(); });
+  } else if(/iphone|ipad|ipod/i.test(navigator.userAgent)){
+    toast('No iPhone: Compartilhar → Adicionar à Tela de Início','share');
+  } else {
+    toast('Use o menu do navegador → Instalar app','install');
+  }
+}
+
+/* ============================================================
+   MINI LIVRO DO CRIADOR — cap. 1 livre, 2-5 VIP
+   ============================================================ */
+const LIVRO = [
+  { titulo:'Começando certo', vip:false, pags:[
+    { t:'Escolhendo sua raça', html:`
+      <p>A raça certa depende do seu objetivo — e errar aqui custa meses. Responda três perguntas antes de comprar o primeiro animal:</p>
+      <h3>1. Qual é o seu objetivo?</h3>
+      <ul><li><b>Carne:</b> Nova Zelândia e Californiano — crescimento rápido, boa carcaça.</li>
+      <li><b>Exposição e pedigree:</b> Flandres e Rex — crescimento mais lento, preço por animal muito maior.</li>
+      <li><b>Começar barato:</b> Mestiço — aprende o ofício com menos risco.</li></ul>
+      <h3>2. Quanto tempo você tem?</h3>
+      <p>NZ e Californiano abatem aos 70–90 dias. Flandres só valora depois de 5–6 meses. Se precisa de dinheiro rápido, raça de corte.</p>
+      <h3>3. Onde vai vender?</h3>
+      <p>Perto de frigorífico? Raça de corte, venda por kg. Perto de cidade grande e criadores? Raça de pedigree, venda por animal.</p>
+      <div class="destaque">Regra de ouro: comece com 1 macho e 2–3 fêmeas. Aprenda com poucos, cresça com segurança.</div>` },
+    { t:'As 5 raças de Nova Zelândia', html:`
+      <p>A Nova Zelândia é a raça mais famosa do mundo para carne — e tem 5 pelagens oficiais:</p>
+      <table><tr><th>Variedade</th><th>Como é</th></tr>
+      <tr><td><b>Branco</b></td><td>O mais famoso. Todo branco, olho vermelho/rosa. Padrão de abate mundial.</td></tr>
+      <tr><td><b>Vermelho</b></td><td>Avermelhado brilhante. O menor da raça.</td></tr>
+      <tr><td><b>Preto</b></td><td>Preto azeviche uniforme, fundo azul-ardósia.</td></tr>
+      <tr><td><b>Azul</b></td><td>Cinza-azulado uniforme.</td></tr>
+      <tr><td><b>Broken</b></td><td>Branco com manchas pretas ou vermelhas — o mais chamativo em exposição.</td></tr></table>
+      <div class="destaque">Para carne, o Branco é imbatível. Para vender reprodutores e exposição, Broken e Azul alcançam os melhores preços.</div>` }
+  ]},
+  { titulo:'Reprodução profissional', vip:true, pags:[
+    { t:'O ciclo da matriz', html:`
+      <p>A coelha gesta em <b>31 dias</b> e pode ter até 8 partidas por ano — mas matriz boa é matriz descansada.</p>
+      <h3>O calendário que funciona</h3>
+      <ul><li><b>Dia 0:</b> acasalamento (leve a fêmea ao macho, nunca o contrário).</li>
+      <li><b>Dia 10–14:</b> palpação — sente-se bolinhas do tamanho de grãos na barriga.</li>
+      <li><b>Dia 28:</b> coloque a caixa de ninho com palha ou feno.</li>
+      <li><b>Dia 31:</b> parto (geralmente de madrugada).</li>
+      <li><b>Dia 28–35 após parto:</b> desmame.</li></ul>
+      <h3>Matriz descansada = ninhada forte</h3>
+      <p>Matriz com ninhada gasta energia dobrada. Intervalo saudável entre partidas: 45–60 dias. Matriz exausta tem filhotes fracos e vida reprodutiva curta.</p>
+      <div class="destaque">Anote tudo no app: a aba Reprodução calcula a data do parto sozinha — use o alerta de "a nascer" para preparar a caixa no dia certo.</div>` },
+    { t:'Descanso e vida reprodutiva', html:`
+      <p>Uma matriz boa rende <b>3 a 4 anos</b> de produção. Os três erros que encurtam essa vida:</p>
+      <ul><li><b>Cobrir toda ninhada:</b> matriz sem descanso entra em falha e abandona os filhotes.</li>
+      <li><b>Não repor:</b> comece a planejar a reposição no 2º ano — as filhas das suas melhores matrizes.</li>
+      <li><b>Macho sobrecarregado:</b> um padreador serve no máximo 8–10 fêmeas. Macho cansado não cobre.</li></ul>
+      <h3>Descarte honesto</h3>
+      <p>Matriz que falha 2 coberturas seguidas, que abandona filhotes duas vezes ou que não amamenta bem: retire do plantel. Matriz ruim custa ração e não devolve.</p>` }
+  ]},
+  { titulo:'Nova Zelândia de A a Z', vip:true, pags:[
+    { t:'Curva de peso semana a semana', html:`
+      <p>Compare sempre com esta curva — se seu lote está abaixo, revise ração ou sanitidade:</p>
+      <table><tr><th>Idade</th><th>Peso médio</th></tr>
+      <tr><td>Nascimento</td><td>50–70 g</td></tr>
+      <tr><td>21 dias</td><td>400–500 g</td></tr>
+      <tr><td>Desmame (28–35d)</td><td>650–800 g</td></tr>
+      <tr><td>60 dias</td><td>1,6–1,9 kg</td></tr>
+      <tr><td>Abate (80–90d)</td><td>2,5–3,0 kg</td></tr>
+      <tr><td>Adulto (matriz)</td><td>4,0–5,5 kg</td></tr></table>
+      <div class="destaque">Registre o peso no app a cada 2 semanas — a Fila de Abate mostra exatamente quem atingiu a meta.</div>` },
+    { t:'Alimentação por fase', html:`
+      <p>Ração é <b>70% do custo</b> de produzir um coelho. Acertar a fase economiza mais que qualquer outra coisa:</p>
+      <table><tr><th>Fase</th><th>Proteína</th><th>Como dar</th></tr>
+      <tr><td>Desmame–70d</td><td>16–18%</td><td>Ração de crescimento, à vontade</td></tr>
+      <tr><td>Matriz prenhe</td><td>15–16%</td><td>Controlada, 150–180 g/dia</td></tr>
+      <tr><td>Matriz com ninhada</td><td>17–18%</td><td>À vontade — ela come por dois</td></tr>
+      <tr><td>Reprodutor</td><td>14–15%</td><td>120–150 g/dia, sem deixar engordar</td></tr></table>
+      <p><b>Feno sempre à vontade</b> — fibra previne diarreia e desgasta os dentes, que crescem a vida inteira.</p>
+      <div class="destaque">Troca de ração é sempre gradual: 7 dias misturando a antiga com a nova. Troca brusca = diarreia = prejuízo.</div>` },
+    { t:'As 5 doenças que matam', html:`
+      <h3>1. Coccidiose</h3><p><b>Sinal:</b> barriga estufada, diarreia, filhote para de crescer. <b>Prevenção:</b> jaulas secas, ração em cocho (nunca no chão), sulfa no período de risco.</p>
+      <h3>2. Coriza (espirro)</h3><p><b>Sinal:</b> espirro, corrimento no nariz e patas sujas. <b>Prevenção:</b> ventilação sem corrente de ar; isole o doente imediatamente.</p>
+      <h3>3. Sarna</h3><p><b>Sinal:</b> crostas nas orelhas ou patas, coceira intensa. <b>Prevenção:</b> ivermectina preventiva a cada 3–4 meses.</p>
+      <h3>4. Mastite</h3><p><b>Sinal:</b> teta vermelha e quente na matriz amamentando. <b>Prevenção:</b> jaula sem arames expostos, ninho seco.</p>
+      <h3>5. Pasteurelose</h3><p><b>Sinal:</b> sinais de coriza + falta de ar. É a mais grave. <b>Prevenção:</b> estresse é o gatilho — superlotação mata mais que bactéria.</p>
+      <div class="destaque">O app registra cada aplicação e calcula a carência de abate automaticamente — nunca venda carne com resíduo de medicamento.</div>` }
+  ]},
+  { titulo:'Gigante de Flandres', vip:true, pags:[
+    { t:'Manejo do gigante', html:`
+      <p>O Flandres é outro negócio dentro do negócio. Tratar como NZ é o erro clássico:</p>
+      <ul><li><b>Jaula:</b> mínimo 80×90cm — ele precisa de espaço para virar e esticar.</li>
+      <li><b>Piso:</b> o peso pesa nos pés — piso mais fechado previne feridas nos calos.</li>
+      <li><b>Crescimento:</b> lento e longo. Não compare com a curva da NZ — ele "atravessa" os meses.</li>
+      <li><b>Ração:</b> mais custo por animal, menos proteína (14–16%) e mais fibra.</li></ul>
+      <h3>Reprodução do gigante</h3>
+      <p>Ninhadas menores (6–8 filhotes), partos mais trabalhosos. Nunca case fêmea com macho muito maior — risco de distocia. A fêmea só entra em reprodução depois dos 8–10 meses, quando atinge o tamanho adulto.</p>` },
+    { t:'Curva de peso e mercado', html:`
+      <p>O Flandres vale por <b>tamanho e pedigree</b>, não por carcaça:</p>
+      <table><tr><th>Idade</th><th>Peso</th></tr>
+      <tr><td>3 meses</td><td>2,5–3,0 kg</td></tr>
+      <tr><td>6 meses</td><td>4,5–5,5 kg</td></tr>
+      <tr><td>Adulto macho</td><td>6,5–8,0 kg</td></tr>
+      <tr><td>Adulto fêmea</td><td>6,0–7,0 kg</td></tr></table>
+      <h3>Os 3 clientes do Flandres</h3>
+      <ul><li><b>Criadores:</b> querem reprodutor com pedigree — o animal de melhor preço.</li>
+      <li><b>Exposição:</b> padrões de pelagem e tamanho — exige registro e paciência.</li>
+      <li><b>Carne especial:</b> alguns restaurantes pagam por porção grande — nicho pequeno e bem pago.</li></ul>
+      <div class="destaque">Flandres é negócio de quem tem paciência: o animal leva 1 ano para valer o máximo. Planeje o fluxo de caixa.</div>` }
+  ]},
+  { titulo:'Vender bem', vip:true, pags:[
+    { t:'Quanto custa produzir 1 coelho', html:`
+      <p>Faça esta conta uma vez e você nunca mais vende no prejuízo:</p>
+      <h3>A conta da matriz</h3>
+      <p>Uma matriz boa: <b>8 filhotes por partida × 4 partidas por ano = 32 filhotes/ano</b>.</p>
+      <ul><li>Ração da matriz + ninhada: ~R$ 40–60/mês = R$ 600/ano</li>
+      <li>Ração de engorda dos 32 filhotes (até 3kg): ~R$ 15–20 por animal</li>
+      <li>Ração do padreador dividida: ~R$ 5 por filhote</li></ul>
+      <p><b>Custo por coelho abatido: cerca de R$ 30–40</b> (com ração a R$ 3,50/kg).</p>
+      <div class="destaque">Use a aba Alimentação do app para saber seu custo real — anote o custo por kg da sua ração e o app soma o mês sozinho.</div>` },
+    { t:'Precificação e clientes fiéis', html:`
+      <h3>Regra da precificação</h3>
+      <p>Preço mínimo = custo × 1,6. Se o coelho custa R$ 35 para produzir, abaixo de R$ 56 você está trabalhando de graça.</p>
+      <h3>A pirâmide de clientes (da pior para a melhor venda)</h3>
+      <ul><li><b>Feira/avulso:</b> preço baixo, cliente infiel, esforço alto.</li>
+      <li><b>Vizinhos e conhecidos:</b> bom volume, pagamento rápido.</li>
+      <li><b>Restaurantes:</b> encomenda mensal, preço por kg melhor — 2 restaurantes fiéis sustentam o criatório.</li>
+      <li><b>Frigorífico:</b> volume constante, preço negociado, entrega programada.</li></ul>
+      <h3>O recibo que fideliza</h3>
+      <p>Entregar <b>recibo impresso com a ficha sanitária do animal</b> transforma você de "vendedor de coelho" em criador profissional. Restaurante e frigorífico compram de quem documenta.</p>
+      <div class="destaque">O app gera esse recibo em PDF com um toque — e é exatamente por isso que ele existe. Conte essa diferença na hora de vender.</div>` }
+  ]}
+];
+
+function abrirLivro(capInicio, pagInicio){
+  const cap = LIVRO[capInicio];
+  if(!cap) return;
+  if(cap.vip && !temAcesso()){
+    abrirVipModal();
+    return;
+  }
+  const pag = pagInicio || 0;
+  const p = cap.pags[pag];
+  const sh = openSheet('📖 Mini Livro do Criador', `
+    <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;margin-bottom:8px;scrollbar-width:none">
+      ${LIVRO.map((c,i)=>{
+        const lock = c.vip && !temAcesso();
+        return `<button class="chip ${i===capInicio?'on':''}" data-cap="${i}">${lock?'🔒 ':''}Cap. ${i+1}</button>`;
+      }).join('')}
+    </div>
+    <div class="pagina">
+      <h2>${esc(p.t)}</h2>
+      <div class="p-sub">Capítulo ${capInicio+1} · ${esc(cap.titulo)} · página ${pag+1} de ${cap.pags.length}</div>
+      ${p.html}
+    </div>
+    <div class="pag-nav">
+      ${pag>0 ? `<button class="btn ghost" id="lvAnt">← Anterior</button>` : ''}
+      ${pag < cap.pags.length-1
+        ? `<button class="btn primary" id="lvProx">Próxima →</button>`
+        : (capInicio < LIVRO.length-1
+            ? `<button class="btn primary" id="lvProxCap">${(LIVRO[capInicio+1].vip && !temAcesso()) ? '🔒 Próx. capítulo (VIP)' : 'Próx. capítulo →'}</button>`
+            : '')}
+    </div>`);
+  sh.querySelectorAll('[data-cap]').forEach(b => b.onclick = () => { sh.close(); abrirLivro(parseInt(b.dataset.cap)); });
+  const ant = sh.querySelector('#lvAnt');
+  if(ant) ant.onclick = () => { sh.close(); abrirLivro(capInicio, pag-1); };
+  const prox = sh.querySelector('#lvProx');
+  if(prox) prox.onclick = () => { sh.close(); abrirLivro(capInicio, pag+1); };
+  const pxc = sh.querySelector('#lvProxCap');
+  if(pxc) pxc.onclick = () => { sh.close(); abrirLivro(capInicio+1, 0); };
 }
 
 /* ============================================================
