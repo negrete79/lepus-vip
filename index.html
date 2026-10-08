@@ -1,0 +1,2992 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1E3A26">
+<meta name="description" content="Criação, manejo, abates e vendas para cunicultores. Funciona offline.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lepus">
+<meta name="application-name" content="Lepus">
+<link rel="icon" type="image/png" sizes="16x16" href="icon-16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
+<link rel="manifest" href="manifest.json">
+<title>Lepus — Cunicultura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,650;1,9..144,500&family=Outfit:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
+<style>
+:root{
+  --bg:#F4EFE4; --paper:#FFFDF6; --ink:#22301E; --muted:#6E7A63;
+  --line:#E3DCC8; --green:#2C5233; --deep:#1E3A26; --green-soft:#E7EDDE;
+  --carrot:#D96E30; --carrot-soft:#F9E7D8; --bad:#B23A2E; --bad-soft:#F6E0DC;
+  --oliva:#6B7A34; --amber:#A8741F; --amber-soft:#F3E8D2;
+  --sat:env(safe-area-inset-top,0px); --sab:env(safe-area-inset-bottom,0px);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Outfit',system-ui,'Segoe UI',Roboto,sans-serif;background:var(--deep);color:var(--ink);font-size:15px;line-height:1.45}
+#app{position:relative;max-width:560px;margin:0 auto;min-height:100dvh;background:var(--bg);box-shadow:0 0 0 1px rgba(0,0,0,.25),0 0 60px rgba(0,0,0,.35)}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input,select,textarea{font:inherit;color:var(--ink)}
+h1,h2,h3,.serif{font-family:'Fraunces',Georgia,'Times New Roman',serif}
+svg{display:block}
+
+header#hdr{position:sticky;top:0;z-index:30;background:var(--bg);padding:calc(var(--sat) + 14px) 18px 10px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+header#hdr h1{font-size:21px;font-weight:650;line-height:1.1}
+header#hdr p{font-size:12px;color:var(--muted);margin-top:1px}
+.iconbtn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--paper);display:flex;align-items:center;justify-content:center;color:var(--green);flex:none;transition:transform .15s}
+.iconbtn:active{transform:scale(.92)}
+main#view{padding:6px 18px calc(170px + var(--sab))}
+
+.hero{background:var(--deep);color:#F4EFE4;border-radius:20px;padding:20px;background-image:radial-gradient(rgba(244,239,228,.07) 1px,transparent 1.3px);background-size:14px 14px}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.h-label{font-size:11.5px;text-transform:uppercase;letter-spacing:1.4px;color:rgba(244,239,228,.65);font-weight:600}
+.h-val{font-family:'Fraunces',serif;font-size:36px;font-weight:650;margin-top:4px}
+.h-sub{font-size:12px;color:rgba(244,239,228,.6);margin-top:2px}
+.hero .bunny{width:62px;flex:none;color:rgba(244,239,228,.55);margin-top:2px}
+.bunny.hop{animation:hop .8s cubic-bezier(.3,1.4,.4,1)}
+@keyframes hop{0%{transform:translateY(0)}30%{transform:translateY(-9px) rotate(-6deg)}55%{transform:translateY(0)}72%{transform:translateY(-4px)}100%{transform:translateY(0)}}
+.h-chart{margin-top:14px}
+.earR{transform-box:view-box;transform-origin:49px 34px;animation:flick 5s infinite}
+@keyframes flick{0%,84%,100%{transform:rotate(0)}88%{transform:rotate(-15deg)}93%{transform:rotate(6deg)}}
+
+.stats,.tira{display:flex;background:var(--paper);border:1px solid var(--line);border-radius:16px;margin-top:14px;padding:13px 4px}
+.tira{margin-bottom:10px}
+.stat{flex:1;text-align:center;border-left:1px solid var(--line);padding:0 4px;min-width:0}
+.stat:first-child{border-left:none}
+.stat b{font-family:'Fraunces',serif;font-size:19px;font-weight:650;color:var(--deep);display:block;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+
+.alerta{display:flex;align-items:center;gap:10px;background:var(--amber-soft);border:1px solid #E8D3A2;border-radius:14px;padding:12px 14px;margin-top:14px;font-size:13px;font-weight:600;color:#7A5510;cursor:pointer}
+.alerta svg{flex:none;color:var(--amber)}
+.aviso{display:flex;gap:8px;align-items:flex-start;background:var(--bad-soft);color:var(--bad);border-radius:11px;padding:10px 12px;font-size:12.5px;font-weight:600;line-height:1.4}
+.aviso svg{flex:none;margin-top:1px}
+
+section{margin-top:22px}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+.sec-h h2{font-size:17.5px;font-weight:650}
+.chip-meta{font-size:11px;font-weight:600;color:var(--green);background:var(--green-soft);padding:3px 10px;border-radius:999px}
+.link{color:var(--carrot);font-weight:600;font-size:13px}
+.grp-h{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:16px 2px 8px}
+.sec-t{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);margin:20px 2px 8px}
+
+.row,.crow,.fila-row,.nrow,.carenc-row,.pk-row,.gest-row,.trow{
+  background:var(--paper);border:1px solid var(--line);border-radius:14px;
+  padding:12px 14px;margin-bottom:9px;display:flex;align-items:center;gap:12px;
+  cursor:pointer;transition:transform .12s;width:100%;text-align:left;
+}
+.row:active,.crow:active,.fila-row:active,.nrow:active,.carenc-row:active,.pk-row:active,.gest-row:active,.trow:active{transform:scale(.985)}
+.carenc-row{background:var(--amber-soft);border-color:#E8D3A2}
+.trow.atras{background:var(--bad-soft);border-color:#E4B9B2}
+.trow.hoje2{background:var(--amber-soft);border-color:#E8D3A2}
+.gest-row.breve{border-color:#E8D3A2;background:var(--amber-soft)}
+.row-ico{width:38px;height:38px;border-radius:12px;background:var(--green-soft);color:var(--green);display:flex;align-items:center;justify-content:center;flex:none}
+.carenc-row .row-ico{background:#FFFDF6;color:var(--amber)}
+.row-main{flex:1;min-width:0}
+.row-main b{display:block;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row-main span{font-size:12px;color:var(--muted)}
+.row-side{text-align:right;flex:none}
+.row-side b{font-family:'Fraunces',serif;font-size:16px;font-weight:650;display:block}
+.row-side span{font-size:11px;color:var(--muted)}
+.tcheck{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--line);background:var(--paper);color:var(--muted);display:flex;align-items:center;justify-content:center;flex:none}
+.tundo{width:34px;height:34px;border-radius:50%;background:#EFE9DA;color:var(--muted);display:flex;align-items:center;justify-content:center;flex:none}
+
+.ava{width:42px;height:42px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;font-family:'Fraunces',serif}
+img.ava{object-fit:cover}
+.ava.f{background:var(--carrot-soft);color:#9C4A15}
+.ava.m{background:var(--green-soft);color:var(--green)}
+.ava.off{background:#ECE7DA;color:#8A8778}
+.c-side{flex:none;text-align:right}
+.c-side>b{display:block;font-size:13.5px;font-family:'Fraunces',serif}
+.st{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;padding:2.5px 9px;border-radius:999px;margin-top:3px}
+.st::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor}
+.st.matriz{background:var(--green-soft);color:var(--green)}
+.st.reprodutor{background:#EAEEDA;color:var(--oliva)}
+.st.engorda{background:var(--amber-soft);color:var(--amber)}
+.st.vendido{background:#ECE7DA;color:#7C7768}
+.st.abatido{background:var(--carrot-soft);color:#B04E14}
+.st.morto{background:#E4E1D6;color:#6B675A}
+.st.carencia{background:var(--amber-soft);color:var(--amber)}
+.st.acasalada{background:var(--amber-soft);color:var(--amber)}
+.st.prenhe{background:var(--green-soft);color:var(--green)}
+.st.nascida{background:#EAEEDA;color:var(--oliva)}
+.st.falhou{background:var(--bad-soft);color:var(--bad)}
+
+.fr-main{flex:1;min-width:0}
+.fr-main b{font-size:14px}
+.fr-main>span{display:block;font-size:11.5px;color:var(--muted);margin:1px 0 6px}
+.pbar{height:4px;background:#EAE4D2;border-radius:99px;overflow:hidden;max-width:170px}
+.pbar i{display:block;height:100%;background:var(--green);border-radius:99px}
+.pbar i.full{background:var(--carrot)}
+.fr-w{flex:none;text-align:right}
+.fr-w b{font-family:'Fraunces',serif;font-size:15.5px;font-weight:650;display:block}
+.pronto{display:inline-block;font-size:10px;font-weight:700;color:#fff;background:var(--carrot);border-radius:99px;padding:1.5px 8px;margin-top:3px;font-style:normal;letter-spacing:.4px}
+em.pronto.caren{background:var(--amber)}
+
+.search{position:relative;margin-bottom:12px}
+.search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.search input{width:100%;height:46px;border:1px solid var(--line);border-radius:13px;background:var(--paper);padding:0 14px 0 42px;font-size:16px}
+.search input:focus{outline:none;border-color:var(--green)}
+.chips{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;font-size:12.5px;font-weight:600;padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:var(--paper);color:var(--muted)}
+.chip.on{background:var(--deep);color:#F4EFE4;border-color:var(--deep)}
+.segmini{display:flex;background:#ECE5D2;border-radius:11px;padding:3px;margin-bottom:14px}
+.segmini button{flex:1;padding:8px 2px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.segmini button.on{background:var(--paper);color:var(--deep);box-shadow:0 1px 3px rgba(40,50,30,.12)}
+
+.empty{text-align:center;padding:34px 20px;color:var(--muted)}
+.empty svg{margin:0 auto 10px;color:#B9B39E}
+.empty b{display:block;color:var(--ink);font-family:'Fraunces',serif;font-size:16px;font-weight:650}
+.empty p{font-size:13px;margin-top:3px}
+
+nav#tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);z-index:40;width:100%;max-width:560px;background:var(--paper);border-top:1px solid var(--line);display:flex;padding:8px 6px calc(8px + var(--sab))}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:#8A9070;font-size:10px;font-weight:600;padding:5px 0;border-radius:12px}
+.tab svg{width:22px;height:22px}
+.tab.on{color:var(--deep)}
+.tab.on .pill{background:var(--green-soft)}
+.pill{display:flex;align-items:center;padding:4px 12px;border-radius:999px}
+#fab{position:fixed;z-index:39;right:max(16px,calc(50vw - 264px));bottom:calc(84px + var(--sab));background:var(--deep);color:#F4EFE4;border-radius:999px;padding:14px 20px;display:flex;align-items:center;gap:7px;font-weight:600;font-size:14px;box-shadow:0 8px 22px rgba(20,35,18,.35);transition:transform .15s}
+#fab:active{transform:scale(.94)}
+#fab svg{width:18px;height:18px}
+
+.ov{position:fixed;inset:0;z-index:100;background:rgba(22,30,16,.5);opacity:0;transition:opacity .25s}
+.ov.on{opacity:1}
+.ov.out{opacity:0}
+.sheet{position:absolute;bottom:0;left:50%;transform:translate(-50%,105%);width:100%;max-width:560px;max-height:90dvh;background:var(--bg);border-radius:22px 22px 0 0;display:flex;flex-direction:column;transition:transform .32s cubic-bezier(.32,.72,.24,1)}
+.ov.on .sheet{transform:translate(-50%,0)}
+.ov.out .sheet{transform:translate(-50%,105%)}
+.sh-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 10px;flex:none}
+.sh-head h3{font-size:19px;font-weight:650}
+.sh-body{overflow-y:auto;padding:4px 18px 22px}
+.sh-foot{flex:none;padding:12px 18px calc(14px + var(--sab));background:var(--bg);border-top:1px solid var(--line);display:flex;gap:10px;align-items:center}
+.sheet.mini{max-width:400px}
+.form{display:flex;flex-direction:column;gap:14px;padding-top:4px}
+.fld label{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:5px}
+.fld input,.fld select,.fld textarea{width:100%;min-height:46px;border:1px solid var(--line);border-radius:12px;background:var(--paper);padding:11px 13px;font-size:16px}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(44,82,51,.13)}
+.fld textarea{min-height:70px;resize:vertical}
+.frow{display:flex;gap:10px}
+.frow>.fld{flex:1}
+.seg{display:flex;background:#ECE5D2;border-radius:11px;padding:3px}
+.seg button{flex:1;padding:9px 2px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.seg button.on{background:var(--paper);color:var(--deep);box-shadow:0 1px 3px rgba(40,50,30,.12)}
+.btn{min-height:48px;border-radius:13px;padding:12px 18px;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;flex:1}
+.btn.primary{background:var(--deep);color:#F4EFE4}
+.btn.primary:active{transform:scale(.97)}
+.btn.ghost{background:var(--paper);border:1px solid var(--line);color:var(--deep)}
+.btn.danger{background:var(--bad);color:#fff}
+.btn.danger-l{background:var(--bad-soft);color:var(--bad)}
+.hint{font-size:12px;color:var(--muted);line-height:1.45}
+
+.it-tools{display:flex;gap:8px;margin-bottom:10px}
+.it-tools button{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;min-height:42px;font-size:13.5px;font-weight:600;color:var(--green);background:var(--green-soft);border-radius:11px}
+.it-tools button.sec{color:var(--muted);background:#EFE9DA}
+.it-row{display:grid;grid-template-columns:1fr 50px 58px 78px 28px;gap:6px;margin-bottom:8px;align-items:center}
+.it-row input,.it-row select{min-height:42px;border:1px solid var(--line);border-radius:10px;background:var(--paper);padding:8px 9px;font-size:15px;width:100%}
+.it-row .i-x{width:28px;height:38px;border-radius:9px;color:var(--muted);display:flex;align-items:center;justify-content:center;background:#EFE9DA}
+.vtot{display:flex;align-items:baseline;justify-content:space-between;flex:1}
+.vtot span{font-size:12px;color:var(--muted);font-weight:600}
+.vtot b{font-family:'Fraunces',serif;font-size:23px;font-weight:650;color:var(--deep)}
+
+.d-head{display:flex;gap:14px;align-items:center;margin-bottom:16px}
+.d-ava{width:58px;height:58px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:650;font-size:18px}
+img.d-ava{object-fit:cover}
+.d-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.d-cell{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:9px 12px;min-width:0}
+.d-cell span{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:700}
+.d-cell b{font-size:14px;word-wrap:break-word}
+.d-acts{display:flex;flex-wrap:wrap;gap:8px}
+.d-acts .btn{flex:1 1 calc(50% - 4px);min-height:44px;font-size:13.5px}
+
+.recibo{background:#fff;border:1.5px solid var(--ink);outline:1px solid var(--ink);outline-offset:3px;padding:20px 18px;margin:6px 4px 14px;border-radius:2px}
+.r-head{text-align:center;border-bottom:1.5px solid var(--ink);padding-bottom:12px}
+.r-logo{width:52px;height:52px;border-radius:50%;background:var(--deep);color:#F4EFE4;display:flex;align-items:center;justify-content:center;margin:0 auto 8px}
+.r-logo svg{width:32px;height:32px}
+.r-name{font-family:'Fraunces',serif;font-size:20px;font-weight:650}
+.r-sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+.r-title{text-align:center;margin:13px 0 3px;font-weight:700;letter-spacing:2px;font-size:13.5px}
+.r-title small{display:block;font-weight:400;letter-spacing:.5px;font-size:9.5px;color:var(--muted);margin-top:2px}
+.r-info{display:flex;justify-content:space-between;gap:10px;font-size:12px;margin:12px 0;border:1px solid var(--line);border-radius:8px;padding:9px 11px;background:var(--bg)}
+.r-info b{display:block;font-size:13px}
+.r-info span{color:var(--muted);font-size:9.5px;text-transform:uppercase;letter-spacing:.8px;font-weight:700}
+.r-info .col{min-width:0}
+.r-info .right{text-align:right}
+table.r-items{width:100%;border-collapse:collapse;font-size:12.5px}
+table.r-items th{text-align:left;font-size:9.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);border-bottom:1px solid var(--ink);padding:4px 2px}
+table.r-items td{padding:6px 2px;border-bottom:1px dashed var(--line);vertical-align:top}
+.r-items .num{text-align:right;white-space:nowrap}
+.r-subline{font-size:10px;color:var(--muted);margin-top:1px}
+.r-tots{margin-top:10px;font-size:12.5px}
+.r-tots .tr{display:flex;justify-content:space-between;padding:2.5px 2px;color:var(--muted)}
+.r-tots .grand{background:var(--deep);color:#F4EFE4;border-radius:8px;padding:8px 12px;margin-top:6px;font-weight:700;font-size:14.5px;justify-content:space-between}
+.r-obs{font-size:11.5px;color:var(--muted);margin-top:9px;font-style:italic}
+.ficha{background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin-top:8px}
+.ficha-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+.ficha-h b{font-family:'Fraunces',serif;font-size:14px}
+.ficha-h span{font-size:10.5px;color:var(--muted)}
+.ficha-l{font-size:12px;margin-top:2px;line-height:1.45}
+.r-sign{text-align:center;margin-top:26px;font-size:11px;color:var(--muted)}
+.r-sign i{display:block;width:200px;border-top:1px solid var(--ink);margin:0 auto 5px;font-style:normal}
+.r-foot{text-align:center;font-size:9.5px;color:var(--muted);margin-top:16px;border-top:1px solid var(--line);padding-top:8px}
+
+#toastRoot{position:fixed;z-index:200;bottom:calc(96px + var(--sab));left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:max-content;max-width:88vw}
+.toast{background:var(--deep);color:#F4EFE4;border-radius:999px;padding:11px 18px;font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:9px;box-shadow:0 10px 26px rgba(15,25,12,.4);animation:tin .35s cubic-bezier(.3,1.3,.4,1);max-width:88vw}
+.toast svg{width:17px;height:17px;color:#A9C79A;flex:none}
+.toast.err svg{color:#F0A08F}
+.toast.hide{opacity:0;transform:translateY(8px);transition:.3s}
+@keyframes tin{from{opacity:0;transform:translateY(14px) scale(.9)}}
+
+.clist{background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:10px}
+.clist button{display:flex;width:100%;align-items:center;gap:12px;padding:13px 15px;border-bottom:1px solid var(--line);font-size:14px;font-weight:600;text-align:left}
+.clist button:last-child{border-bottom:none}
+.clist button svg{color:var(--green);flex:none}
+.clist button small{display:block;font-weight:400;font-size:11.5px;color:var(--muted)}
+.clist .red,.clist .red svg{color:var(--bad)}
+.stbox{background:var(--paper);border:1px solid var(--line);border-radius:14px;margin-top:10px;padding:6px 15px;font-size:13px}
+.stbox .l{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line)}
+.stbox .l:last-child{border-bottom:none}
+.stbox .l span{color:var(--muted)}
+.stbox .l b{text-align:right;font-weight:600}
+.stbox .ok{color:var(--green)}.stbox .warn{color:var(--amber)}.stbox .err{color:var(--bad)}
+.rc-row{display:flex;align-items:center;gap:10px;background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:10px 13px;margin-bottom:8px;font-size:14px;font-weight:600}
+.rc-row span{flex:1}
+.rc-row button{color:var(--bad);flex:none}
+
+/* ---------- FREEMIUM / VIP ---------- */
+.vip-locked{position:relative;filter:blur(2.5px);opacity:.55;pointer-events:none;user-select:none}
+.vip-badge{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#1E3A26;color:#F4EFE4;padding:8px 14px;border-radius:999px;font-weight:800;font-size:12px;display:flex;align-items:center;gap:6px;z-index:5;box-shadow:0 4px 15px rgba(0,0,0,.3);pointer-events:auto;cursor:pointer}
+.vip-locked{pointer-events:auto}
+#vipBox{position:fixed;inset:0;background:rgba(15,29,54,.88);z-index:99999;display:none;align-items:center;justify-content:center;padding:20px}
+#vipBox.on{display:flex}
+.vip-card{background:#FFFDF6;border-radius:20px;padding:24px;max-width:380px;width:100%;text-align:center;max-height:90dvh;overflow-y:auto}
+.vip-id{font-family:'Fraunces',serif;font-size:26px;font-weight:650;letter-spacing:1px;background:var(--bg);border:1.5px dashed var(--deep);border-radius:12px;padding:10px;margin:12px 0}
+.vip-preco{margin:10px 0 4px}
+.vip-preco .antigo{text-decoration:line-through;color:var(--muted);font-size:15px;margin-right:6px}
+.vip-preco .novo{font-family:'Fraunces',serif;font-size:27px;font-weight:650;color:var(--deep)}
+.vip-preco .selo{background:var(--carrot-soft);color:#B04E14;font-size:10px;font-weight:800;padding:3px 8px;border-radius:99px;vertical-align:middle;margin-left:4px}
+
+/* ---------- MINI LIVRO VIP ---------- */
+.livro-card{background:var(--deep);color:#F4EFE4;border-radius:18px;padding:18px;margin-top:14px;display:flex;gap:14px;align-items:center;cursor:pointer}
+.livro-card svg{flex:none;color:#E8A66B}
+.livro-card b{display:block;font-family:'Fraunces',serif;font-size:17px;font-weight:650}
+.livro-card span{font-size:12.5px;color:rgba(244,239,228,.7);display:block;margin-top:2px}
+.pagina{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px 18px}
+.pagina h2{font-size:20px;font-weight:650;margin-bottom:4px}
+.pagina .p-sub{font-size:12px;color:var(--muted);margin-bottom:14px}
+.pagina h3{font-size:15.5px;font-weight:650;color:var(--green);margin:16px 0 6px}
+.pagina p,.pagina li{font-size:14px;line-height:1.6}
+.pagina ul{padding-left:18px;margin:6px 0}
+.pagina li{margin-bottom:6px}
+.pagina table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}
+.pagina th{background:var(--deep);color:#F4EFE4;padding:7px 8px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+.pagina td{padding:7px 8px;border-bottom:1px solid var(--line)}
+.pagina .destaque{background:var(--green-soft);border:1px solid #CFDDC4;border-radius:12px;padding:12px 14px;margin:12px 0;font-size:13.5px;font-weight:600;line-height:1.5}
+.pag-nav{display:flex;gap:10px;margin-top:16px}
+.pag-nav .btn{font-size:13px;min-height:44px}
+
+@media (min-width:700px){
+  .sheet{border-radius:22px;bottom:40px;max-height:82dvh}
+}
+
+/* ---------- DESKTOP: só telas grandes COM mouse ---------- */
+@media (min-width:1024px) and (hover:hover) and (pointer:fine){
+  body{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:280px 1fr;gap:0;min-height:100vh;background:#F4EFE4}
+  header{grid-column:1/-1}
+  #view{padding:24px}
+  .grid-racas{grid-template-columns:repeat(2,1fr);gap:20px}
+  #app{max-width:none;box-shadow:none;margin:0;border:0}
+  nav.menu-lateral{display:flex!important;flex-direction:column;position:sticky;top:0;height:100vh;background:#1E3A26;color:white;padding:20px}
+  nav.menu-inferior{display:none!important}
+}
+@media (max-width:1023.98px){
+  nav.menu-lateral{display:none!important}
+}
+nav.menu-lateral{display:none}
+.menu-lateral .m-titulo{font-family:'Fraunces',serif;font-size:22px;font-weight:650;color:#F4EFE4}
+.menu-lateral .m-sub{font-size:11px;color:#9FAF8F;margin:2px 0 18px;letter-spacing:.4px}
+.menu-lateral .m-item{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border-radius:12px;color:#D7DEC9;font-weight:600;font-size:14.5px;text-align:left;margin-bottom:6px;transition:background .15s}
+.menu-lateral .m-item:hover{background:rgba(244,239,228,.08)}
+.menu-lateral .m-item.on{background:rgba(244,239,228,.14);color:#F4EFE4}
+.menu-lateral .m-item svg{flex:none}
+.menu-lateral .m-sep{height:1px;background:rgba(244,239,228,.14);margin:12px 0}
+.menu-lateral .m-vip{font-size:12px;font-weight:700;color:#E8A66B;padding:10px 2px 0}
+</style>
+</head>
+<body>
+
+<nav class="menu-lateral" id="menuLat" aria-label="Menu principal"></nav>
+
+<div id="app">
+  <div id="trialBanner" style="display:none;background:#F3E8D2;border:1px solid #E8D3A2;color:#7A5510;padding:10px 14px;border-radius:12px;font-size:13px;font-weight:700;margin:12px"></div>
+  <header id="hdr"></header>
+  <main id="view"></main>
+</div>
+
+<button id="fab" aria-label="Ação principal"></button>
+<nav id="tabbar" class="menu-inferior"></nav>
+<div id="toastRoot"></div>
+
+<!-- Modal VIP com preço R$49,99 -->
+<div id="vipBox">
+  <div class="vip-card">
+    <h3 style="font-family:'Fraunces',serif;font-size:21px">👑 Acesso VIP Lepus</h3>
+    <p class="hint" style="margin-top:8px">Mande seu ID pelo WhatsApp. Após o PIX, você recebe o código de liberação.</p>
+    <div class="vip-preco">
+      <span class="antigo">R$ 100</span><span class="novo">R$ 49,99</span><span class="selo">OFERTA</span>
+    </div>
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:10px">Seu ID exclusivo</div>
+    <div class="vip-id" id="meuId">—</div>
+    <button class="btn primary" id="btnWa" style="width:100%">📋 Copiar e mandar no WhatsApp</button>
+    <div style="display:flex;align-items:center;gap:10px;margin:16px 0 10px;color:var(--muted);font-size:11px;font-weight:700">
+      <span style="flex:1;height:1px;background:var(--line)"></span>JÁ TEM CÓDIGO?<span style="flex:1;height:1px;background:var(--line)"></span>
+    </div>
+    <input id="vipInput" placeholder="LIBERA-XXXX-XXXX" style="width:100%;height:48px;border:2px solid var(--deep);border-radius:12px;text-align:center;font-weight:700;text-transform:uppercase">
+    <button class="btn primary" id="btnLiberar" style="width:100%;margin-top:10px">LIBERAR ACESSO</button>
+    <p class="hint" style="margin-top:14px">👑 VIP inclui: app completo + raças premium + Mini Livro ilustrado em PDF</p>
+    <button id="btnVipClose" style="margin-top:10px;font-size:12px;color:var(--muted)">Voltar</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   LEPUS 2.0 — gestão de cunicultura · arquivo único · offline
+   ============================================================ */
+'use strict';
+
+/* ---------- Utilitários ---------- */
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : 'id-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+const isoHoje = () => { const d = new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+const diasAtras = n => { const d = new Date(); d.setDate(d.getDate()-n); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+const addDias = (iso, n) => { const d = new Date(iso+'T00:00'); d.setDate(d.getDate()+n); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+const fmtData = s => s ? s.split('-').reverse().join('/') : '—';
+const fmtDataHora = d => d.toLocaleString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+const fmtMoeda = n => (Number(n)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const fmtKg = n => (Number(n)||0).toLocaleString('pt-BR',{maximumFractionDigits:2}) + ' kg';
+const fmtNum = n => (Number(n)||0).toLocaleString('pt-BR',{maximumFractionDigits:2});
+const fmtCurto = v => v >= 1000 ? (v/1000).toLocaleString('pt-BR',{maximumFractionDigits:1})+' mil' : String(Math.round(v));
+function idade(d){
+  if(!d) return '—';
+  const n = new Date(); const b = new Date(d+'T00:00');
+  let m = (n.getFullYear()-b.getFullYear())*12 + (n.getMonth()-b.getMonth());
+  let dd = n.getDate()-b.getDate(); if(dd<0){ m--; dd+=30; }
+  if(m<0) return '—';
+  const a = Math.floor(m/12); m = m%12;
+  return a>0 ? a+' a '+m+' m' : m>0 ? m+' m '+dd+' d' : dd+' d';
+}
+const vendaTotal = v => v.itens.reduce((s,i)=> s + (Number(i.qtd)||0)*(Number(i.preco)||0), 0) - (Number(v.desconto)||0);
+
+/* ============================================================
+   FREEMIUM · TRIAL 7 DIAS · VIP — validação local (offline)
+   ============================================================ */
+const SENHA_MESTRA = 'negret2026';
+const RACAS_PREMIUM = ['Nova Zelândia Branco','Nova Zelândia Azul','Nova Zelândia Vermelho','Gigante de Flandres'];
+
+function isVip(){ return localStorage.getItem('lepus_vip') === '1'; }
+function getDias(){
+  let i = localStorage.getItem('lepus_inicio');
+  if(!i){ i = Date.now(); localStorage.setItem('lepus_inicio', String(i)); }
+  return (Date.now() - parseInt(i)) / (1000*60*60*24);
+}
+function temAcesso(){ return isVip() || getDias() <= 7; }
+function ehRacaPremium(r){
+  if(!r) return false;
+  const x = String(r).toLowerCase();
+  return RACAS_PREMIUM.some(p => x.includes(p.toLowerCase()));
+}
+function gerarIdCliente(){
+  let id = localStorage.getItem('lepus_meu_id');
+  if(!id){
+    const cs = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const pick = n => Array.from({length:n}, () => cs[Math.floor(Math.random()*cs.length)]).join('');
+    id = 'LEPUS-' + pick(4) + '-' + pick(4);
+    localStorage.setItem('lepus_meu_id', id);
+  }
+  return id;
+}
+function codigoEsperadoPara(id){
+  return 'LIBERA-' + btoa(id + SENHA_MESTRA).substring(0,4).toUpperCase() + '-' + btoa(id).substring(2,6).toUpperCase();
+}
+/* Códigos universais embutidos:
+   LNPREM-MARIA-8214 · LNPREM-JOAO-4692 · LNPREM-NEGRET-002147 */
+const _cx = ["TE5QUkVNLU1BUklBLTgyMTQ=","TE5QUkVNLUpPQU8tNDY5Mg==","TE5QUkVNLU5FR1JFVC0wMDIxNDc="];
+function codigoUniversalValido(c){
+  try{ return _cx.some(s => { try{ return atob(s) === c; }catch(e){ return false; } }); }
+  catch(e){ return false }
+}
+function checkVipCore(codigo){
+  const c = String(codigo || '').trim().toUpperCase();
+  if(!c) return false;
+  if(c === codigoEsperadoPara(gerarIdCliente())) return true;
+  if(codigoUniversalValido(c)) return true;
+  return false;
+}
+function checkVip(){
+  const input = document.getElementById('vipInput');
+  if(checkVipCore(input.value)){
+    localStorage.setItem('lepus_vip','1');
+    fecharVipModal();
+    toast('VIP ativado! Acesso total liberado 👑');
+    setTimeout(() => location.reload(), 700);
+  } else {
+    alert('Código inválido. Confira com o suporte no WhatsApp (31) 98251-7147.');
+  }
+}
+function abrirVipModal(){
+  const box = document.getElementById('vipBox');
+  document.getElementById('meuId').textContent = gerarIdCliente();
+  const msg = 'Olá! Quero liberar meu app Lepus. Meu ID: ' + gerarIdCliente() + '. Já fiz o PIX de R$49,99';
+  const btn = document.getElementById('btnWa');
+  btn.onclick = () => {
+    const done = () => window.open('https://wa.me/5531982517147?text=' + encodeURIComponent(msg), '_blank');
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(msg).then(done, done);
+    } else done();
+  };
+  box.classList.add('on');
+}
+function fecharVipModal(){ document.getElementById('vipBox').classList.remove('on'); }
+function updateBanner(){
+  const b = document.getElementById('trialBanner');
+  if(!b) return;
+  if(isVip()){ b.style.display = 'none'; return; }
+  const d = getDias();
+  if(d <= 7){
+    b.style.display = 'block';
+    b.innerText = '🎁 Trial VIP: faltam ' + Math.ceil(7 - d) + ' dias grátis — aproveite Flandres e NZ Branco';
+  } else {
+    b.style.display = 'block';
+    b.innerHTML = '⏰ Seu trial de 7 dias acabou <button onclick="abrirVipModal()" style="margin-left:10px;background:#B23A2E;color:white;padding:4px 10px;border-radius:99px;font-size:11px">ATIVAR VIP</button>';
+  }
+}
+function bloquearPremium(){
+  if(temAcesso()){
+    document.querySelectorAll('.vip-locked').forEach(el=>{
+      el.classList.remove('vip-locked');
+      const b = el.querySelector('.vip-badge'); if(b) b.remove();
+    });
+    return;
+  }
+  document.querySelectorAll('[data-vip="1"]').forEach(el=>{
+    el.classList.add('vip-locked');
+    if(!el.querySelector('.vip-badge')){
+      const badge = document.createElement('div');
+      badge.className = 'vip-badge';
+      badge.innerHTML = '🔒 VIP';
+      badge.onclick = (e)=>{ e.stopPropagation(); abrirVipModal(); };
+      el.style.position = 'relative';
+      el.appendChild(badge);
+    }
+  });
+}
+document.addEventListener('click', e => {
+  if(temAcesso()) return;
+  const t = e.target && e.target.closest && e.target.closest('.vip-locked');
+  if(t){ e.preventDefault(); e.stopPropagation(); abrirVipModal(); }
+}, true);
+(function(){
+  try{
+    const p = new URLSearchParams(location.search);
+    const v = p.get('vip');
+    if(v && !isVip() && checkVipCore(v)){
+      localStorage.setItem('lepus_vip','1');
+      history.replaceState(null, '', location.pathname);
+      setTimeout(() => toast('VIP ativado pelo link! 👑'), 600);
+    }
+  }catch(e){}
+})();
+
+/* ---------- Ícones ---------- */
+const P = {
+  home:'<path d="M4 10.5 12 3.5l8 7V20a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 20z"/><path d="M9.5 21v-6.5h5V21"/>',
+  rabbit:'<path d="M9.4 9.2C7.6 6.9 8 3.7 9.7 3.1c1.4-.5 2.2 1.6 1.9 4.5M14.6 9.2c1.8-2.3 1.4-5.5-.3-6.1-1.4-.5-2.2 1.6-1.9 4.5"/><circle cx="12" cy="15.2" r="5.3"/><path d="M10.4 14.7h.01M13.6 14.7h.01" stroke-width="2.4"/><path d="M11 17.2c.6.5 1.4.5 2 0"/>',
+  pulse:'<path d="M3 12h4l2.5-6.5 4.5 13 2.5-6.5H21"/>',
+  syringe:'<path d="m18 2 4 4"/><path d="m17 7 3-3"/><path d="M19 9 8.7 19.3a2.4 2.4 0 0 1-3.4 0l-.6-.6a2.4 2.4 0 0 1 0-3.4L15 5"/><path d="m9 11 4 4"/><path d="m5 19-3 3"/><path d="m14 4 6 6"/>',
+  balde:'<ellipse cx="12" cy="6" rx="7.5" ry="2.6"/><path d="M4.6 6.2 6.5 20a2.2 2.2 0 0 0 2.2 1.9h6.6a2.2 2.2 0 0 0 2.2-1.9l1.9-13.8"/>',
+  warn:'<path d="M12 3.5 2.8 20h18.4z"/><path d="M12 9.5v4.5"/><path d="M12 17.2h.01"/>',
+  knife:'<path d="M3.5 8.3h11.7a5 5 0 0 1 5 5v.7h-9.3L3.5 9.7z"/><path d="m12.6 14.5 3.4 5.6"/>',
+  tag:'<path d="M20.6 12.6 12.9 20.3a1.9 1.9 0 0 1-2.7 0L3.4 13.5V3.4h10.1l7.1 7.1a1.5 1.5 0 0 1 0 2.1z"/><circle cx="8" cy="8" r="1.4"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  x:'<path d="M6 6l12 12M18 6 6 18"/>',
+  search:'<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>',
+  gear:'<circle cx="12" cy="12" r="3.1"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.09a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.09a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/>',
+  pencil:'<path d="m4 20 .9-3.6L16.1 5.2a2.1 2.1 0 0 1 3 3L7.6 19.1 4 20z"/><path d="m14.5 6.8 2.7 2.7"/>',
+  trash:'<path d="M4 7h16M9.5 7V5a1.5 1.5 0 0 1 1.5-1.5h2A1.5 1.5 0 0 1 14.5 5v2M6.5 7l.8 12a2 2 0 0 0 2 1.9h5.4a2 2 0 0 0 2-1.9l.8-12"/>',
+  scale:'<path d="M9 10 7.2 3.8h9.6L15 10"/><rect x="5.5" y="10" width="13" height="9.5" rx="2.5"/>',
+  share:'<path d="M12 3.2v11.6M8 6.7 12 3l4 3.7"/><path d="M6 11H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-1"/>',
+  download:'<path d="M12 3v12M8 11.2l4 4 4-4"/><path d="M5 20.5h14"/>',
+  check:'<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+  eggs:'<path d="M9.5 19.5c-2.9 0-5-2-5-4.7C4.5 11.2 6.7 6 9.5 6s5 5.2 5 8.8c0 2.7-2.1 4.7-5 4.7z"/><path d="M17.7 18.9c1.5-.6 2.5-2.1 2.5-4 0-2.4-1.6-5.9-3.6-5.9-.5 0-.9.2-1.3.6"/>',
+  heart:'<path d="M12 20.5s-7.5-4.7-9.3-9A5.2 5.2 0 0 1 12 6.6a5.2 5.2 0 0 1 9.3 4.9c-1.8 4.3-9.3 9-9.3 9z"/>',
+  tarefa:'<rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 9h6M9 13h6M9 17h3"/>',
+  undo:'<path d="M4 9h10a5 5 0 0 1 0 10h-3"/><path d="M8 5 4 9l4 4"/>',
+  bell:'<path d="M18 9.5a6 6 0 1 0-12 0c0 4.8-1.8 6-1.8 6h15.6s-1.8-1.2-1.8-6z"/><path d="M10.3 19.5a2 2 0 0 0 3.4 0"/>',
+  install:'<path d="M12 3v12M8 11.2l4 4 4-4"/><rect x="4" y="17.5" width="16" height="3.5" rx="1.5"/>',
+  db:'<ellipse cx="12" cy="5.5" rx="7.5" ry="3"/><path d="M4.5 5.5v13c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-13"/><path d="M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/>',
+  sparkle:'<path d="M12 3.5 13.8 9l5.5 1.8-5.5 1.8L12 18l-1.8-5.4L4.7 10.8 10.2 9z"/><path d="M18.5 16.5l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/>'
+};
+const ic = (n, s=20) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
+const bunnySVG = cls => `<svg class="bunny ${cls||''}" viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M39 38 C33 25 34 12 41 9 C47 7 49 17 47 34"/>
+  <path class="earR" d="M57 38 C63 25 62 12 55 9 C49 7 47 17 49 34"/>
+  <circle cx="48" cy="58" r="17"/>
+  <circle cx="42.5" cy="56.5" r="1.4" fill="currentColor" stroke="none"/>
+  <circle cx="53.5" cy="56.5" r="1.4" fill="currentColor" stroke="none"/>
+  <path d="M46 62.5h4M48 62.5v2.4M48 64.9c-.8 1.1-2 1.3-3 .6M48 64.9c.8 1.1 2 1.3 3 .6"/>
+</svg>`;
+
+/* ---------- Predefinidos ---------- */
+const RACAS_BASE = [
+  'Nova Zelândia Branco','Nova Zelândia Vermelho','Nova Zelândia Preto','Nova Zelândia Azul','Nova Zelândia Broken',
+  'Californiano','Branco de Vila Real','Chinchila','Gigante de Flandres','Angorá','Rex','Belo Holandês','Mestiço'
+];
+const RACA_INFO = {
+  'Nova Zelândia Branco':   'O mais famoso: todo branco, olho vermelho/rosa',
+  'Nova Zelândia Vermelho': 'Avermelhado brilhante — o menor da raça',
+  'Nova Zelândia Preto':    'Preto azeviche uniforme, fundo azul-ardósia',
+  'Nova Zelândia Azul':     'Cinza-azulado uniforme',
+  'Nova Zelândia Broken':   'Branco com manchas pretas ou vermelhas'
+};
+const MEDS = [
+  {n:'Sulfaquinoxalina 20%',    via:'Água de bebida',  ind:'Coccidiose',               dose:'0,5–1 mL/L de água, 3–5 dias',        car:10},
+  {n:'Amprolium 20%',           via:'Água de bebida',  ind:'Coccidiose',               dose:'1 mL/L de água, 5–7 dias',             car:7},
+  {n:'Toltrazuril 2,5%',        via:'Oral',            ind:'Coccidiose',               dose:'0,4 mL/kg, 2 dias seguidos',           car:5},
+  {n:'Enrofloxacina 10%',       via:'Injetável',       ind:'Infecções bacterianas',    dose:'0,1–0,2 mL/kg, 3–5 dias',              car:14},
+  {n:'Oxitetraciclina LA 20%',  via:'Injetável',       ind:'Antibiótico de amplo espectro', dose:'0,2 mL/kg, repetir em 72h',       car:21},
+  {n:'Penicilina G benzatina',  via:'Injetável',       ind:'Infecções e abscessos',    dose:'0,1–0,2 mL/kg',                        car:15},
+  {n:'Ivermectina 1%',          via:'Injetável (SC)',  ind:'Sarna, piolhos, parasitas',dose:'0,1 mL/kg, repetir em 10–14 dias',     car:21},
+  {n:'Albendazol 10%',          via:'Oral',            ind:'Vermes intestinais',       dose:'1 mL/5 kg, repetir em 10–14 dias',     car:14},
+  {n:'Levamisol 10%',           via:'Oral',            ind:'Vermes intestinais',       dose:'1 mL/10 kg',                           car:7},
+  {n:'Complexo B',              via:'Injetável',       ind:'Apetite e recuperação',    dose:'0,5–1 mL/animal',                      car:0},
+  {n:'Vitamina A·D·E',          via:'Injetável',       ind:'Imunidade e reprodução',   dose:'0,2–0,5 mL/animal',                    car:0}
+];
+const RACOES = [
+  {n:'Crescimento / Engorda', fase:'16–18% proteína · do desmame ao abate'},
+  {n:'Gestação',              fase:'15–16% proteína · matrizes prenhes'},
+  {n:'Lactação',              fase:'17–18% proteína · matriz com ninhada'},
+  {n:'Desmame / Creche',      fase:'17–18% proteína · 28 a 70 dias'},
+  {n:'Manutenção',            fase:'13–14% proteína · animais em repouso'},
+  {n:'Reprodutores',          fase:'14–15% proteína · machos e matrizes vazias'},
+  {n:'Feno de tifton',        fase:'Volumoso · fibra e desgaste dos dentes'},
+  {n:'Feno de alfafa',        fase:'Volumoso · proteína e cálcio'}
+];
+const racasTodas = () => RACAS_BASE.concat(db.settings.racasCustom || []);
+
+/* ---------- Banco local ---------- */
+const LS = 'lepus_db_v1';
+const dbPadrao = () => ({ settings:{configurado:false, nome:'', responsavel:'', telefone:'', cidade:'', pesoAlvo:3.5, racasCustom:[], somTarefas:true},
+  coelhos:[], ninhadas:[], acasalamentos:[], tarefas:[], abates:[], vendas:[], sanidade:[], alimentacao:[] });
+function normalizaDb(d){
+  const p = dbPadrao();
+  const out = Object.assign({}, p, (d && typeof d === 'object') ? d : {});
+  out.settings = Object.assign({}, p.settings, (d && d.settings) || {});
+  if(!Array.isArray(out.settings.racasCustom)) out.settings.racasCustom = [];
+  ['coelhos','ninhadas','acasalamentos','tarefas','abates','vendas','sanidade','alimentacao'].forEach(k => { if(!Array.isArray(out[k])) out[k] = []; });
+  const renomeia = (de, para) => out.coelhos.forEach(c => { if(c.raca === de) c.raca = para; });
+  renomeia('Flanders', 'Gigante de Flandres');
+  renomeia('Branco de Vila Récal', 'Branco de Vila Real');
+  renomeia('Nova Zelândia Branca', 'Nova Zelândia Branco');
+  return out;
+}
+let db;
+try{ db = normalizaDb(JSON.parse(localStorage.getItem(LS))); }catch(e){ db = dbPadrao(); }
+const save = () => { try{ localStorage.setItem(LS, JSON.stringify(db)); }catch(e){ toast('Memória cheia — reduza fotos ou exporte backup','x',true); } };
+
+const STATUS_L = { matriz:'Matriz', reprodutor:'Reprodutor', engorda:'Engorda', vendido:'Vendido', abatido:'Abatido', morto:'Óbito' };
+const GEST_L = { acasalada:'Acasalada', prenhe:'Prenhe', nascida:'Nascida', falhou:'Falhou' };
+const ativos = () => db.coelhos.filter(c => !['vendido','abatido','morto'].includes(c.status));
+const porId = id => db.coelhos.find(c => c.id === id);
+const nomeCoelho = id => { const c = porId(id); return c ? c.brinco : '—'; };
+const proxNum = () => Math.max(0, ...db.vendas.map(v=>v.num||0)) + 1;
+
+function carenciaCoelho(c){
+  const hoje = isoHoje(); let melhor = null;
+  db.sanidade.forEach(s => {
+    const dias = Number(s.carenciaDias)||0;
+    if(dias <= 0 || !s.data) return;
+    const fim = addDias(s.data, dias);
+    if(fim < hoje) return;
+    let atinge = false;
+    if(s.alvoTipo === 'individual') atinge = s.coelhoId === c.id;
+    else if(s.alvoTipo === 'grupo'){
+      if(s.grupo === 'ativos') atinge = !['vendido','abatido','morto'].includes(c.status);
+      else atinge = c.status === s.grupo;
+    }
+    if(atinge && (!melhor || fim > melhor.fim)) melhor = { fim, med:s.med };
+  });
+  return melhor;
+}
+function alvoDesc(s){
+  if(s.alvoTipo === 'individual'){ const c = porId(s.coelhoId); return c ? 'coelho '+c.brinco : 'coelho (removido)'; }
+  return { matriz:'todas as matrizes', reprodutor:'reprodutores', engorda:'engorda (lote)', ativos:'plantel todo' }[s.grupo] || '—';
+}
+
+/* ============================================================
+   ALARME OFFLINE — @capacitor/local-notifications
+   ============================================================ */
+const TAREFAS_KEY = 'tarefas';
+function tarefasGet(){
+  try{ const a = JSON.parse(localStorage.getItem(TAREFAS_KEY)); return Array.isArray(a) ? a : []; }
+  catch(e){ return []; }
+}
+function tarefasSet(arr){ try{ localStorage.setItem(TAREFAS_KEY, JSON.stringify(arr)); }catch(e){} }
+
+function migraTarefasDeBackup(){
+  const atuais = tarefasGet();
+  if(!atuais.length && Array.isArray(db.tarefas) && db.tarefas.length){
+    tarefasSet(db.tarefas.map(x => ({
+      id: x.id || uid(), nome: x.titulo || 'Tarefa',
+      data: x.data || isoHoje(), hora: x.hora || '08:00',
+      repetir: 'nao', feita: !!x.concluida, alarmeTocou: false,
+      tipo: x.tipo || 'Outros cuidados', coelhoId: x.coelhoId || null
+    })));
+  }
+  db.tarefas = [];
+}
+
+const _Cap = (typeof window !== 'undefined' && window.Capacitor) ? window.Capacitor : null;
+const _LN  = (_Cap && _Cap.isNativePlatform && _Cap.isNativePlatform()) ? _Cap.Plugins.LocalNotifications : null;
+
+const CANAL = 'lembretes-coelhos';
+const SOM   = 'alarme.mp3';
+const _REPETE_DIAS = { diario:1, semanal:7, '14dias':14 };
+
+function isoDeData(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function hashId(s){ let h = 0; for(const ch of String(s)) h = (h*31 + ch.charCodeAt(0))|0; return Math.abs(h); }
+function idNotif(t){ return t.notifId || (t.notifId = hashId(t.id) % 2147483000 + 1); }
+function dataHoraTarefa(t){ return new Date((t.data||isoHoje()) + 'T' + (t.hora || '08:00')); }
+
+let _audioCtx = null;
+function ensureAudio(){
+  try{
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if(!AC) return null;
+    if(!_audioCtx) _audioCtx = new AC();
+    if(_audioCtx.state === 'suspended') _audioCtx.resume();
+    return _audioCtx;
+  }catch(e){ return null; }
+}
+function beepHz(freq, start, dur){
+  const ctx = _audioCtx;
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = 'square'; o.frequency.value = freq;
+  g.gain.setValueAtTime(0.0001, start);
+  g.gain.linearRampToValueAtTime(0.95, start + 0.012);
+  g.gain.setValueAtTime(0.95, start + dur - 0.02);
+  g.gain.linearRampToValueAtTime(0.0001, start + dur);
+  o.connect(g); g.connect(ctx.destination);
+  o.start(start); o.stop(start + dur + 0.02);
+}
+function sirene(){
+  if(db.settings.somTarefas === false) return;
+  const ctx = ensureAudio(); if(!ctx || ctx.state !== 'running') return;
+  const t = ctx.currentTime + 0.03;
+  for(let i=0;i<2;i++){
+    const b = t + i*1.15;
+    beepHz(988,  b,        0.16);
+    beepHz(1319, b + 0.20, 0.16);
+    beepHz(988,  b + 0.40, 0.16);
+    beepHz(1319, b + 0.60, 0.30);
+  }
+  try{ navigator.vibrate && navigator.vibrate([250,120,250,120,250,120,400]); }catch(e){}
+}
+
+async function lnCanal(){
+  if(!_LN) return;
+  try{
+    await _LN.createChannel({
+      id: CANAL, name: 'Lembretes de coelhos',
+      description: 'Alarmes de tarefas do criatório',
+      importance: 5, sound: SOM, vibration: true, visibility: 2, enableLights: true
+    });
+  }catch(e){}
+}
+async function lnPerm(){
+  if(!_LN) return false;
+  try{
+    const st = await _LN.checkPermissions();
+    if(st.display === 'granted') return true;
+    const r = await _LN.requestPermissions();
+    return r.display === 'granted';
+  }catch(e){ return false; }
+}
+async function lnAlarmeExato(){
+  if(!_LN) return true;
+  try{
+    if(typeof _LN.checkExactNotificationSetting === 'function'){
+      const s = await _LN.checkExactNotificationSetting();
+      if(s && s.exactNotificationSettingEnabled === false &&
+         typeof _LN.openExactNotificationSetting === 'function'){
+        await _LN.openExactNotificationSetting();
+        toast('Autorize “Alarmes e lembretes” para o alarme tocar na hora certa','bell');
+      }
+    }
+  }catch(e){}
+  return true;
+}
+async function tocarAlarme(){
+  if(!_LN){
+    sirene();
+    toast('Modo navegador: alarme offline exige o APK instalado','bell');
+    return;
+  }
+  const ok = await lnPerm();
+  if(!ok){ toast('Permissão de notificação negada','x',true); return; }
+  await lnCanal();
+  await lnAlarmeExato();
+  try{
+    await _LN.schedule({ notifications:[{
+      id: 1,
+      title: 'CuniCoelho 🐰',
+      body: 'TESTE DO ALARME — apague a tela agora! Toca em 10 segundos.',
+      schedule: { at: new Date(Date.now() + 10000), allowWhileIdle: true },
+      sound: SOM, channelId: CANAL
+    }]});
+    toast('Teste agendado — apague a tela e aguarde 10 s','bell');
+  }catch(e){
+    toast('Falha ao agendar: ' + (e && e.message ? e.message : 'erro'), 'x', true);
+  }
+}
+async function lnAgendar(t){
+  if(!_LN || t.feita) return;
+  const id = idNotif(t);
+  const alvo = dataHoraTarefa(t);
+  if(!alvo || isNaN(alvo.getTime()) || alvo.getTime() <= Date.now()) return;
+  try{
+    await lnCanal();
+    await lnCancelar(t);
+    await _LN.schedule({ notifications:[{
+      id,
+      title: 'CuniCoelho 🐰',
+      body: t.nome + (t.hora ? ' · ' + t.hora : ''),
+      schedule: { at: alvo, allowWhileIdle: true },
+      sound: SOM, channelId: CANAL,
+      extra: { tarefaId: t.id }
+    }]});
+    tarefasSet(tarefasGet());
+  }catch(e){}
+}
+async function lnCancelar(t){
+  if(!_LN || !t.notifId) return;
+  try{ await _LN.cancel({ notifications:[{ id: t.notifId }] }); }catch(e){}
+}
+async function lnAgendarTodas(){
+  for(const t of tarefasGet()){ if(!t.feita) await lnAgendar(t); }
+}
+async function verificarAtrasadas(){
+  const hoje = isoHoje(), agora = new Date();
+  const arr = tarefasGet();
+  let novasAtrasadas = 0;
+  for(const t of arr){
+    if(t.feita || t.alarmeTocou) continue;
+    const alvo = dataHoraTarefa(t);
+    if(!alvo || isNaN(alvo.getTime())) continue;
+    const vencida = (t.data < hoje) || (t.data === hoje && alvo.getTime() <= agora.getTime());
+    if(!vencida) continue;
+    novasAtrasadas++;
+    t.alarmeTocou = true;
+    if(_LN){
+      try{
+        await _LN.schedule({ notifications:[{
+          id: idNotif(t) + 500000000,
+          title: '⚠️ Tarefa atrasada — CuniCoelho 🐰',
+          body: t.nome + ' — atrasada desde ' + fmtData(t.data) + '!',
+          schedule: { at: new Date(Date.now() + 600 * novasAtrasadas), allowWhileIdle: true },
+          sound: SOM, channelId: CANAL, extra: { tarefaId: t.id }
+        }]});
+      }catch(e){}
+    }
+  }
+  if(novasAtrasadas){
+    tarefasSet(arr);
+    sirene();
+  }
+  for(const t of arr){ if(!t.feita) await lnAgendar(t); }
+}
+function concluirTarefa(id){
+  const arr = tarefasGet(); const t = arr.find(x=>x.id===id); if(!t) return;
+  if(t.repetir && t.repetir !== 'nao' && _REPETE_DIAS[t.repetir]){
+    const d = new Date(t.data + 'T00:00');
+    d.setDate(d.getDate() + _REPETE_DIAS[t.repetir]);
+    t.data = isoDeData(d);
+    t.feita = false; t.alarmeTocou = false;
+    lnAgendar(t);
+    toast('Concluída! Reagendada para ' + fmtData(t.data));
+  } else {
+    t.feita = true; lnCancelar(t);
+    toast('Tarefa concluída');
+  }
+  tarefasSet(arr); render();
+}
+function reabrirTarefa(id){
+  const arr = tarefasGet(); const t = arr.find(x=>x.id===id); if(!t) return;
+  t.feita = false; t.alarmeTocou = false;
+  tarefasSet(arr); lnAgendar(t); render();
+}
+function excluirTarefa(id){
+  const arr = tarefasGet(); const t = arr.find(x=>x.id===id);
+  if(t){ lnCancelar(t); tarefasSet(arr.filter(x=>x.id!==id)); }
+  toast('Tarefa excluída'); render();
+}
+if(_LN){
+  _LN.addListener('localNotificationActionPerformed', ({ notification }) => {
+    const tid = notification && notification.data && notification.data.tarefaId;
+    const arr = tarefasGet(); const t = arr.find(x=>x.id===tid);
+    if(t){ t.alarmeTocou = true; tarefasSet(arr); }
+    state.tab = 'manejo'; state.msub = 'tarefas'; render();
+  });
+}
+
+/* ---------- Estado ---------- */
+const state = { tab:'painel', filtro:'todos', q:'', sub:'plantel', msub:'sanidade' };
+const TABS = [
+  {id:'painel',  label:'Painel',  icon:'home'},
+  {id:'coelhos', label:'Coelhos', icon:'rabbit'},
+  {id:'manejo',  label:'Manejo',  icon:'pulse'},
+  {id:'abates',  label:'Abates',  icon:'knife'},
+  {id:'vendas',  label:'Vendas',  icon:'tag'}
+];
+
+function hopBunny(){
+  const b = $('#hdr').querySelector('.bunny');
+  if(b){ b.classList.add('hop'); setTimeout(()=>b.classList.remove('hop'), 900); }
+}
+function toast(msg, icon='check', err=false){
+  const t = document.createElement('div');
+  t.className = 'toast' + (err ? ' err' : '');
+  t.innerHTML = ic(err ? 'x' : icon, 17) + '<span>' + esc(msg) + '</span>';
+  $('#toastRoot').appendChild(t);
+  setTimeout(()=>{ t.classList.add('hide'); setTimeout(()=>t.remove(), 320); }, 2600);
+}
+function openSheet(title, bodyHTML, opts={}){
+  const ov = document.createElement('div');
+  ov.className = 'ov';
+  ov.innerHTML = `<div class="sheet ${opts.cls||''}"><div class="sh-head"><h3>${title}</h3>
+    <button class="iconbtn sh-x" aria-label="Fechar">${ic('x')}</button></div>
+    <div class="sh-body">${bodyHTML}</div>${opts.foot ? `<div class="sh-foot">${opts.foot}</div>` : ''}</div>`;
+  document.body.appendChild(ov);
+  requestAnimationFrame(()=> requestAnimationFrame(()=> ov.classList.add('on')));
+  const close = () => { ov.classList.remove('on'); ov.classList.add('out'); setTimeout(()=>ov.remove(), 300); };
+  ov.close = close;
+  ov.addEventListener('click', e => { if(e.target === ov && !opts.locked) close(); });
+  ov.querySelector('.sh-x').onclick = close;
+  return ov;
+}
+function confirmSheet(titulo, msg, acao, cb){
+  const sh = openSheet(esc(titulo),
+    `<p class="hint" style="font-size:13.5px;margin-top:2px">${esc(msg)}</p>
+     <div class="d-acts" style="margin-top:18px">
+       <button class="btn ghost" data-a="n">Cancelar</button>
+       <button class="btn danger" data-a="y">${esc(acao)}</button>
+     </div>`, {cls:'mini'});
+  sh.querySelector('[data-a=n]').onclick = sh.close;
+  sh.querySelector('[data-a=y]').onclick = () => { sh.close(); cb(); };
+}
+
+/* ---------- Menu lateral (desktop) ---------- */
+function renderSidebar(){
+  const nav = $('#menuLat'); if(!nav) return;
+  const dT = getDias();
+  nav.innerHTML = `
+    <div class="m-titulo">🐰 Lepus</div>
+    <div class="m-sub">Lepus Negret's · Cunicultura</div>
+    ${TABS.map(t => `<button class="m-item ${state.tab===t.id?'on':''}" data-tab="${t.id}">${ic(t.icon,20)}<span>${t.label}</span></button>`).join('')}
+    <div class="m-sep"></div>
+    <button class="m-item" id="mLivro">${ic('db',20)}<span>Mini Livro</span></button>
+    <button class="m-item" id="mPerfil">${ic('gear',20)}<span>Perfil</span></button>
+    <div class="m-sep"></div>
+    <div class="m-vip">${isVip() ? '👑 VIP ativo' : (dT<=7 ? '🎁 Trial: ' + Math.ceil(7-dT) + ' dia(s)' : '⏰ Trial encerrado')}</div>`;
+  $$('#menuLat [data-tab]').forEach(b => b.onclick = () => { state.tab = b.dataset.tab; render(); window.scrollTo(0,0); });
+  const ml = $('#mLivro');
+  if(ml) ml.onclick = () => { state.tab = 'painel'; render(); setTimeout(() => abrirLivro(0), 100); };
+  const pf = $('#mPerfil');
+  if(pf) pf.onclick = () => sheetConfig();
+}
+
+/* ---------- Cabeçalho / abas / FAB ---------- */
+function renderHeader(){
+  let t, s;
+  if(state.tab === 'painel'){
+    t = esc(db.settings.nome || 'Lepus');
+    s = new Date().toLocaleDateString('pt-BR', {weekday:'long', day:'numeric', month:'long'});
+  } else if(state.tab === 'coelhos'){
+    t = 'Coelhos'; s = ativos().length + ' ativos · ' + db.coelhos.length + ' registros';
+  } else if(state.tab === 'manejo'){
+    t = 'Manejo'; s = tarefasGet().filter(x=>!x.feita && x.data<=isoHoje()).length + ' tarefas pendentes';
+  } else if(state.tab === 'abates'){
+    t = 'Abates'; s = db.abates.length + ' registros';
+  } else {
+    t = 'Vendas'; s = db.vendas.length + ' vendas emitidas';
+  }
+  $('#hdr').innerHTML = `<div class="h-l"><h1>${t}</h1><p>${s}</p></div>
+    <div class="h-r">${window._installEvt ? `<button class="iconbtn" id="btnInstallHdr" aria-label="Instalar app">${ic('install')}</button>` : ''}
+    <button class="iconbtn" id="btnCfg" aria-label="Configurações">${ic('gear')}</button></div>`;
+  $('#btnCfg').onclick = sheetConfig;
+  if($('#btnInstallHdr')) $('#btnInstallHdr').onclick = tentarInstalar;
+}
+function renderFab(){
+  const fab = $('#fab');
+  let label = 'Nova venda';
+  if(state.tab === 'coelhos') label = state.sub==='plantel' ? 'Novo coelho' : state.sub==='repro' ? 'Novo acasalamento' : 'Nova ninhada';
+  if(state.tab === 'manejo')  label = state.msub==='sanidade' ? 'Nova aplicação' : state.msub==='alimentacao' ? 'Registrar ração' : '+ Nova tarefa';
+  if(state.tab === 'abates')  label = 'Novo abate';
+  fab.innerHTML = ic('plus', 18) + '<span>' + label + '</span>';
+  fab.onclick = () => {
+    if(state.tab === 'coelhos'){
+      if(state.sub === 'plantel') sheetCoelho();
+      else if(state.sub === 'repro') sheetAcasalamento();
+      else sheetNinhada();
+    }
+    else if(state.tab === 'manejo'){
+      if(state.msub === 'sanidade') sheetSanidade();
+      else if(state.msub === 'alimentacao') sheetAlimentacao();
+      else sheetTarefa();
+    }
+    else if(state.tab === 'abates') sheetAbate();
+    else sheetVenda();
+  };
+}
+function render(){
+  renderHeader(); renderFab(); renderSidebar(); updateBanner();
+  $('#tabbar').innerHTML = TABS.map(t =>
+    `<button class="tab ${state.tab===t.id?'on':''}" data-tab="${t.id}">
+       <span class="pill">${ic(t.icon,22)}</span><span>${t.label}</span></button>`).join('');
+  $$('#tabbar .tab').forEach(b => b.onclick = () => { state.tab = b.dataset.tab; render(); window.scrollTo(0,0); });
+  if(state.tab === 'painel') viewPainel();
+  else if(state.tab === 'coelhos') viewCoelhos();
+  else if(state.tab === 'manejo') viewManejo();
+  else if(state.tab === 'abates') viewAbates();
+  else viewVendas();
+  bloquearPremium();
+}
+
+/* ============================================================
+   PAINEL
+   ============================================================ */
+function svgBars(){
+  const meses = [];
+  for(let i=5; i>=0; i--){
+    const d = new Date(); d.setDate(1); d.setMonth(d.getMonth()-i);
+    meses.push({ key: d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),
+      label: d.toLocaleDateString('pt-BR',{month:'short'}).replace('.',''), total:0 });
+  }
+  db.vendas.forEach(v => { const m = meses.find(x => x.key === (v.data||'').slice(0,7)); if(m) m.total += vendaTotal(v); });
+  const max = Math.max(...meses.map(m=>m.total), 1);
+  const W=340, H=152, pad=8, bw=(W-pad*2)/6;
+  let bars = '';
+  meses.forEach((m,i)=>{
+    const h = Math.max((m.total/max)*(H-56), 2);
+    const x = pad + i*bw + 9, wid = bw-18, y = H-40-h;
+    const cur = i===5;
+    bars += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${wid.toFixed(1)}" height="${h.toFixed(1)}" rx="5" fill="${cur?'#E07A3F':'rgba(244,239,228,.5)'}"/>
+      <text x="${(x+wid/2).toFixed(1)}" y="${(y-6).toFixed(1)}" text-anchor="middle" font-size="9.5" font-weight="600" fill="${cur?'#E8945F':'rgba(244,239,228,.8)'}">${m.total?fmtCurto(m.total):''}</text>
+      <text x="${(x+wid/2).toFixed(1)}" y="${H-19}" text-anchor="middle" font-size="10" fill="rgba(244,239,228,.55)">${m.label}</text>`;
+  });
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" preserveAspectRatio="xMidYMid meet">
+    <line x1="${pad}" y1="${H-40}" x2="${W-pad}" y2="${H-40}" stroke="rgba(244,239,228,.22)"/>${bars}</svg>`;
+}
+
+function viewPainel(){
+  const at = ativos();
+  const hoje = isoHoje();
+  const mesKey = hoje.slice(0,7);
+  const vendasMes = db.vendas.filter(v => (v.data||'').slice(0,7) === mesKey);
+  const totalMes = vendasMes.reduce((s,v)=>s+vendaTotal(v),0);
+  const totalGeral = db.vendas.reduce((s,v)=>s+vendaTotal(v),0);
+  const mesNome = new Date().toLocaleDateString('pt-BR',{month:'long'});
+  const alvo = Number(db.settings.pesoAlvo)||3.5;
+  const fila = at.filter(c => c.status==='engorda' && c.peso>0).sort((a,b)=>b.peso-a.peso).slice(0,5);
+  const ultimas = [...db.vendas].sort((a,b)=> (b.data||'').localeCompare(a.data||'') || (b.num||0)-(a.num||0)).slice(0,3);
+  const emCarencia = at.filter(c => carenciaCoelho(c));
+  const aNascer = db.acasalamentos.filter(g => ['acasalada','prenhe'].includes(g.status) && g.prevista && g.prevista <= addDias(hoje,3)).sort((a,b)=>a.prevista.localeCompare(b.prevista));
+  const tPend = tarefasGet().filter(t => !t.feita && (t.data||'') <= hoje).sort((a,b)=>(a.data||'').localeCompare(b.data||''));
+
+  const filaHTML = fila.length ? fila.map(c => {
+    const pct = Math.min(100, Math.round(c.peso/alvo*100));
+    const car = carenciaCoelho(c);
+    return `<div class="fila-row" data-id="${c.id}" ${(!temAcesso() && ehRacaPremium(c.raca))?'data-vip="1"':''}>
+      <div class="fr-main"><b>${esc(c.brinco)}</b><span>${esc(c.raca||'—')} · ${idade(c.nascimento)}</span>
+        <div class="pbar"><i class="${pct>=100?'full':''}" style="width:${pct}%"></i></div></div>
+      <div class="fr-w"><b>${fmtKg(c.peso)}</b>${car
+        ? `<em class="pronto caren">carência ${fmtData(car.fim)}</em>`
+        : pct>=100 ? '<em class="pronto">pronto</em>' : `<span class="hint">${pct}% da meta</span>`}</div>
+    </div>`;
+  }).join('') : `<div class="empty">${bunnySVG('')}<b>Ninguém na fila</b><p>Registre coelhos em engorda e pesos para acompanhá-los aqui.</p></div>`;
+
+  const vendasHTML = ultimas.length ? ultimas.map(v =>
+    `<div class="row" data-id="${v.id}"><div class="row-ico">${ic('tag',19)}</div>
+      <div class="row-main"><b>#${String(v.num).padStart(4,'0')} · ${esc(v.cliente||'Consumidor')}</b>
+      <span>${v.itens.length} ${v.itens.length>1?'itens':'item'} · ${fmtData(v.data)}</span></div>
+      <div class="row-side"><b>${fmtMoeda(vendaTotal(v))}</b><span>${esc(v.pagamento||'')}</span></div></div>`).join('')
+    : `<div class="empty">${ic('tag',30)}<b>Sem vendas ainda</b><p>Toque em “Nova venda” para emitir o primeiro recibo.</p></div>`;
+
+  const agendaHTML = (aNascer.length || tPend.length) ? `
+    <section>
+      <div class="sec-h"><h2>Agenda de hoje</h2></div>
+      ${tPend.map(t => `<div class="trow ${t.data<hoje?'atras':t.data===hoje?'hoje2':''}" data-tid="${t.id}">
+        <div class="row-ico">${ic('bell',17)}</div>
+        <div class="row-main"><b>${esc(t.nome)}</b>
+          <span>${fmtData(t.data)}${t.hora?' · '+esc(t.hora):''}</span></div>
+        <span class="st ${t.data<hoje?'falhou':'acasalada'}">${t.data<hoje?'atrasada':'hoje'}</span></div>`).join('')}
+      ${aNascer.map(g => `<button class="gest-row" data-id="${g.id}"><div class="row-ico">${ic('eggs',18)}</div>
+        <div class="row-main"><b>${esc(nomeCoelho(g.matrizId))} × ${esc(nomeCoelho(g.padraoId))}</b>
+        <span>Parto previsto para ${fmtData(g.prevista)}</span></div>
+        <span class="st ${g.prevista<=hoje?'falhou':'acasalada'}">${g.prevista<=hoje?'nasceu?':'a nascer'}</span></button>`).join('')}
+    </section>` : '';
+
+  $('#view').innerHTML = `
+    <section class="hero">
+      <div class="hero-top">
+        <div>
+          <div class="h-label">Vendas de ${mesNome}</div>
+          <div class="h-val">${fmtMoeda(totalMes)}</div>
+          <div class="h-sub">${vendasMes.length} venda${vendasMes.length===1?'':'s'} este mês · ${fmtMoeda(totalGeral)} acumulado</div>
+        </div>
+        ${bunnySVG('')}
+      </div>
+      <div class="h-chart">${svgBars()}</div>
+    </section>
+    ${emCarencia.length ? `<div class="alerta" id="alertaCar">${ic('warn',18)}<span>${emCarencia.length} coelho${emCarencia.length>1?'s':''} em carência de abate — toque para ver</span></div>` : ''}
+    <div class="stats">
+      <div class="stat"><b>${at.length}</b><span>Plantel</span></div>
+      <div class="stat"><b>${at.filter(c=>c.status==='matriz').length}</b><span>Matrizes</span></div>
+      <div class="stat"><b>${db.acasalamentos.filter(g=>['acasalada','prenhe'].includes(g.status)).length}</b><span>Gestações</span></div>
+      <div class="stat"><b>${at.filter(c=>c.status==='engorda').length}</b><span>Engorda</span></div>
+    </div>
+    ${agendaHTML}
+    <section>
+      <div class="sec-h"><h2>Fila de abate</h2><span class="chip-meta">meta ${fmtKg(alvo)}</span></div>
+      ${filaHTML}
+    </section>
+    <section>
+      <div class="sec-h"><h2>Últimas vendas</h2><button class="link" id="verVendas">Ver todas</button></div>
+      ${vendasHTML}
+    </section>`;
+  $('#verVendas').onclick = () => { state.tab='vendas'; render(); };
+  const al = $('#alertaCar'); if(al) al.onclick = () => { state.tab='manejo'; state.msub='sanidade'; render(); };
+  $$('#view .fila-row').forEach(r => r.onclick = () => sheetDetalhe(r.dataset.id));
+  $$('#view .gest-row').forEach(r => r.onclick = () => sheetGestDet(r.dataset.id));
+  $$('#view .row').forEach(r => r.onclick = () => sheetRecibo(r.dataset.id));
+  $$('#view [data-tid]').forEach(r => r.onclick = () => { state.tab='manejo'; state.msub='tarefas'; render(); });
+
+  const cardLivro = document.createElement('button');
+  cardLivro.className = 'livro-card';
+  cardLivro.style.cssText = 'width:100%;text-align:left';
+  cardLivro.innerHTML = `${ic('db',28)}<span style="flex:1"><b>👑 Mini Livro do Criador</b><span>${temAcesso() ? 'Guia NZ, Flandres, reprodução e venda' : 'Exclusivo VIP — veja o sumário'}</span></span>${ic('plus',18)}`;
+  cardLivro.onclick = () => abrirLivro(0);
+  $('#view').appendChild(cardLivro);
+}
+
+/* ============================================================
+   COELHOS · PLANTEL / REPRODUÇÃO / NINHADAS
+   ============================================================ */
+function avaCls(c){ return ['vendido','abatido','morto'].includes(c.status) ? 'off' : (c.sexo==='F' ? 'f' : 'm'); }
+function avaHTML(c, cls){
+  if(c.foto) return `<img class="${cls} ${avaCls(c)}" src="${c.foto}" alt="">`;
+  return `<div class="${cls} ${avaCls(c)}">${esc((c.brinco||'?').replace(/\D/g,'').slice(-2) || (c.brinco||'?').slice(0,2))}</div>`;
+}
+
+function listaCoelhosHTML(){
+  const q = state.q.toLowerCase();
+  let lista = db.coelhos.filter(c =>
+    (state.filtro==='todos' && !['vendido','abatido','morto'].includes(c.status)) ||
+    (state.filtro==='matriz' && c.status==='matriz') ||
+    (state.filtro==='reprodutor' && c.status==='reprodutor') ||
+    (state.filtro==='engorda' && c.status==='engorda') ||
+    (state.filtro==='arq' && ['vendido','abatido','morto'].includes(c.status))
+  );
+  if(q) lista = lista.filter(c => ((c.brinco||'')+' '+(c.nome||'')+' '+(c.raca||'')+' '+(c.jaula||'')).toLowerCase().includes(q));
+  lista.sort((a,b)=> (a.brinco||'').localeCompare(b.brinco||'', 'pt-BR', {numeric:true}));
+  if(!lista.length) return `<div class="empty">${bunnySVG('')}<b>Nenhum coelho aqui</b><p>Ajuste o filtro ou toque em “Novo coelho”.</p></div>`;
+  return lista.map(c =>
+    `<div class="crow" data-id="${c.id}" ${(!temAcesso() && ehRacaPremium(c.raca))?'data-vip="1"':''}>
+      ${avaHTML(c,'ava')}
+      <div class="row-main"><b>${esc(c.brinco)}${c.nome ? ' · '+esc(c.nome) : ''}</b>
+        <span>${c.jaula?'Jaula '+esc(c.jaula)+' · ':''}${esc(c.raca||'—')} · ${idade(c.nascimento)}</span></div>
+      <div class="c-side"><b>${c.peso ? fmtKg(c.peso) : '—'}</b>
+        <span class="st ${c.status}">${STATUS_L[c.status]}</span></div>
+    </div>`).join('');
+}
+
+function listaReproHTML(){
+  if(!db.acasalamentos.length) return `<div class="empty">${ic('heart',34)}<b>Nenhum acasalamento</b><p>Registre a cobertura da matriz para acompanhar a gestação e o parto previsto.</p></div>`;
+  const hoje = isoHoje();
+  const lista = [...db.acasalamentos].sort((a,b)=>(b.data||'').localeCompare(a.data||''));
+  return lista.map(g => {
+    const ativa = ['acasalada','prenhe'].includes(g.status);
+    const dias = g.prevista ? Math.round((new Date(g.prevista+'T00:00') - new Date(hoje+'T00:00'))/864e5) : null;
+    let sub = `Acasalado ${fmtData(g.data)} · previsto ${fmtData(g.prevista)}`;
+    if(g.status==='nascida') sub = `Acasalado ${fmtData(g.data)} · nascimento registrado`;
+    if(g.status==='falhou')  sub = `Acasalado ${fmtData(g.data)} · não houve nascimento`;
+    return `<div class="gest-row ${ativa && dias!==null && dias<=3 ? 'breve':''}" data-id="${g.id}">
+      <div class="row-ico">${ic('heart',18)}</div>
+      <div class="row-main"><b>${esc(nomeCoelho(g.matrizId))} × ${esc(nomeCoelho(g.padraoId))}</b>
+        <span>${sub}</span></div>
+      <div class="row-side">${ativa && dias!==null && dias>=0 && dias<=31 ? `<b>${dias}</b><span>${dias===0?'hoje':'dias'}</span>` : ''}
+        <span class="st ${g.status}">${GEST_L[g.status]}</span></div>
+    </div>`;
+  }).join('');
+}
+
+function listaNinhadasHTML(){
+  if(!db.ninhadas.length) return `<div class="empty">${ic('eggs',34)}<b>Nenhuma ninhada</b><p>Registre os nascimentos — ou pelo fluxo de gestação, que preenche automaticamente.</p></div>`;
+  return [...db.ninhadas].sort((a,b)=>(b.nascimento||'').localeCompare(a.nascimento||'')).map(n =>
+    `<div class="nrow" data-id="${n.id}"><div class="row-ico">${ic('eggs',19)}</div>
+      <div class="row-main"><b>${esc(nomeCoelho(n.matrizId))} × ${esc(nomeCoelho(n.padraoId))}</b>
+        <span>${fmtData(n.nascimento)} · ${idade(n.nascimento)} · ${n.vivos ?? n.nascidos ?? 0} vivo(s)</span></div>
+      <div class="row-side"><b style="font-family:'Fraunces',serif;font-size:15px">${n.nascidos??'—'}</b><span>nascidos</span></div>
+    </div>`).join('');
+}
+
+function viewCoelhos(){
+  $('#view').innerHTML = `
+    <div class="segmini">
+      <button data-sub="plantel" class="${state.sub==='plantel'?'on':''}">Plantel</button>
+      <button data-sub="repro" class="${state.sub==='repro'?'on':''}">Reprodução</button>
+      <button data-sub="ninhadas" class="${state.sub==='ninhadas'?'on':''}">Ninhadas</button>
+    </div>
+    <div id="subArea"></div>`;
+  $$('#view .segmini button').forEach(b => b.onclick = () => { state.sub = b.dataset.sub; render(); });
+  renderSub();
+}
+function renderSub(){
+  const area = $('#subArea'); if(!area) return;
+  if(state.sub === 'plantel'){
+    area.innerHTML = `
+      <div class="search">${ic('search',18)}<input id="qCoelhos" type="search" placeholder="Buscar brinco, raça ou jaula" value="${esc(state.q)}"></div>
+      <div class="chips">${[['todos','Ativos'],['matriz','Matrizes'],['reprodutor','Reprodutores'],['engorda','Engorda'],['arq','Arquivados']]
+        .map(([k,l])=>`<button class="chip ${state.filtro===k?'on':''}" data-f="${k}">${l}</button>`).join('')}</div>
+      <div id="lista">${listaCoelhosHTML()}</div>`;
+    $('#qCoelhos').oninput = e => { state.q = e.target.value; $('#lista').innerHTML = listaCoelhosHTML(); bindLista(); };
+    bindLista();
+  } else if(state.sub === 'repro'){
+    const hoje = isoHoje();
+    const ativasG = db.acasalamentos.filter(g=>['acasalada','prenhe'].includes(g.status));
+    const breve = ativasG.filter(g=>g.prevista && g.prevista <= addDias(hoje,3));
+    area.innerHTML = `
+      <div class="tira">
+        <div class="stat"><b>${ativasG.length}</b><span>Em gestação</span></div>
+        <div class="stat"><b>${breve.length}</b><span>A nascer</span></div>
+        <div class="stat"><b>${db.acasalamentos.filter(g=>g.status==='nascida').length}</b><span>Nascidas</span></div>
+      </div>
+      <div id="lista">${listaReproHTML()}</div>`;
+    $$('#lista .gest-row').forEach(r => r.onclick = () => sheetGestDet(r.dataset.id));
+  } else {
+    area.innerHTML = `<div id="lista">${listaNinhadasHTML()}</div>`;
+    $$('#lista .nrow').forEach(r => r.onclick = () => sheetNinhadaDet(r.dataset.id));
+  }
+}
+function bindLista(){ $$('#lista .crow').forEach(r => r.onclick = () => sheetDetalhe(r.dataset.id)); }
+
+function sugestaoBrinco(){
+  const nums = db.coelhos.map(c => { const m = (c.brinco||'').match(/\d+/); return m ? parseInt(m[0],10) : 0; });
+  return String(Math.max(0, ...nums) + 1).padStart(3, '0');
+}
+
+function comprimeFoto(file, cb){
+  const rd = new FileReader();
+  rd.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const max = 480, k = Math.min(1, max/Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(img.width*k));
+      c.height = Math.max(1, Math.round(img.height*k));
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      cb(c.toDataURL('image/jpeg', 0.72));
+    };
+    img.src = rd.result;
+  };
+  rd.readAsDataURL(file);
+}
+
+function sheetCoelho(id){
+  const c = id ? porId(id) : null;
+  const racaList = racasTodas().slice();
+  if(c && c.raca && !racaList.includes(c.raca)) racaList.unshift(c.raca);
+  const racaVal = c ? (c.raca || '') : '';
+  const arquivado = c && ['vendido','abatido','morto'].includes(c.status);
+  const sh = openSheet(c ? 'Editar coelho' : 'Novo coelho', `
+    <div class="form">
+      <div class="frow">
+        <div class="fld"><label>Brinco *</label><input id="fBrinco" value="${esc(c?c.brinco:sugestaoBrinco())}" placeholder="Ex.: 012"></div>
+        <div class="fld"><label>Nome (opcional)</label><input id="fNome" value="${esc(c?c.nome:'')}" placeholder="Aurora"></div>
+      </div>
+      <div class="frow">
+        <div class="fld"><label>Sexo</label><div class="seg" id="fSexo">
+          <button data-v="F" class="${(!c||c.sexo==='F')?'on':''}">Fêmea</button>
+          <button data-v="M" class="${(c&&c.sexo==='M')?'on':''}">Macho</button></div></div>
+        <div class="fld"><label>Categoria</label><div class="seg" id="fCat">
+          <button data-v="matriz" class="${(c?c.status==='matriz':true)?'on':''}">Matriz</button>
+          <button data-v="reprodutor" class="${(c&&c.status==='reprodutor')?'on':''}">Reprod.</button>
+          <button data-v="engorda" class="${(c&&c.status==='engorda')?'on':''}">Engorda</button></div></div>
+      </div>
+      ${arquivado ? `<p class="hint">Este animal está arquivado como <b>${STATUS_L[c.status]}</b>. Deixe como está para manter o status, ou escolha uma categoria acima para reativá-lo.</p>` : ''}
+      <div class="frow">
+        <div class="fld"><label>Raça predefinida</label>
+          <select id="fRacaSel">
+            <option value="">—</option>
+            ${racaList.map(r=>`<option value="${esc(r)}" ${racaVal===r?'selected':''}>${esc(r)}</option>`).join('')}
+            <option value="__out">Outra…</option>
+          </select></div>
+        <div class="fld"><label>Nascimento</label><input id="fNasc" type="date" value="${c?c.nascimento||'':isoHoje()}"></div>
+      </div>
+      <p class="hint" id="fRacaHint" style="margin-top:-6px"></p>
+      <div class="fld" id="fRacaOutWrap" style="display:none"><label>Qual raça?</label><input id="fRacaOut" placeholder="Digite o nome da raça"></div>
+      <div class="frow">
+        <div class="fld"><label>Jaula / gaiola</label><input id="fJaula" value="${esc(c?c.jaula:'')}" placeholder="01"></div>
+        <div class="fld"><label>Peso atual (kg)</label><input id="fPeso" type="number" inputmode="decimal" min="0" step="0.01" value="${c&&c.peso?c.peso:''}" placeholder="3,50"></div>
+      </div>
+      <div class="fld"><label>Foto (opcional)</label>
+        <div style="display:flex;gap:12px;align-items:center">
+          <img id="fFotoPrev" alt="" src="${c&&c.foto?c.foto:''}" style="width:56px;height:56px;border-radius:14px;object-fit:cover;background:#EFE9DA;${c&&c.foto?'':'display:none'}">
+          <input type="file" accept="image/*" id="fFoto" style="flex:1;font-size:13px;color:var(--muted)">
+        </div></div>
+      <div class="fld"><label>Observações</label><textarea id="fObs" placeholder="Origem, temperamento, cobertura…">${esc(c?c.obs:'')}</textarea></div>
+      <button class="btn primary" id="fSalvar">${ic('check',18)} Salvar coelho</button>
+    </div>`);
+  const segVal = (el, def) => { const b = el.querySelector('.on'); return b ? b.dataset.v : def; };
+  ['fSexo','fCat'].forEach(i => sh.querySelectorAll('#'+i+' button').forEach(b => b.onclick = () => {
+    sh.querySelectorAll('#'+i+' button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+  }));
+  const rSel = sh.querySelector('#fRacaSel');
+  const updRacaHint = () => {
+    sh.querySelector('#fRacaOutWrap').style.display = rSel.value==='__out' ? '' : 'none';
+    const info = RACA_INFO[rSel.value];
+    sh.querySelector('#fRacaHint').textContent = info ? 'Pelagem: ' + info : '';
+  };
+  rSel.onchange = updRacaHint; updRacaHint();
+  let novaFoto = null;
+  sh.querySelector('#fFoto').onchange = e => {
+    const f = e.target.files[0]; if(!f) return;
+    comprimeFoto(f, d => { novaFoto = d; const p = sh.querySelector('#fFotoPrev'); p.src = d; p.style.display = ''; });
+  };
+  sh.querySelector('#fSalvar').onclick = () => {
+    const brinco = sh.querySelector('#fBrinco').value.trim();
+    if(!brinco) return toast('O brinco é obrigatório','x',true);
+    const dup = db.coelhos.find(x => x.brinco.toLowerCase() === brinco.toLowerCase() && (!c || x.id !== c.id));
+    if(dup) return toast('Já existe um coelho com esse brinco','x',true);
+    const sexo = segVal(sh.querySelector('#fSexo'), c ? c.sexo : 'F');
+    const status = segVal(sh.querySelector('#fCat'), c ? c.status : 'matriz');
+    const raca = rSel.value==='__out' ? sh.querySelector('#fRacaOut').value.trim() : rSel.value;
+    const peso = parseFloat(sh.querySelector('#fPeso').value) || null;
+    const jaula = sh.querySelector('#fJaula').value.trim();
+    const foto = novaFoto !== null ? novaFoto : (c ? c.foto : null);
+    if(c){
+      Object.assign(c, { brinco, nome:sh.querySelector('#fNome').value.trim(), sexo, status, raca, jaula, foto,
+        nascimento:sh.querySelector('#fNasc').value || null,
+        obs:sh.querySelector('#fObs').value.trim() });
+      if(peso && peso !== c.peso){ c.peso = peso; (c.pesos = c.pesos||[]).push({d:isoHoje(), kg:peso}); }
+      toast('Coelho atualizado');
+    } else {
+      db.coelhos.push({ id:uid(), brinco, nome:sh.querySelector('#fNome').value.trim(), sexo, status, raca, jaula, foto,
+        nascimento:sh.querySelector('#fNasc').value || null,
+        peso, pesos: peso ? [{d:isoHoje(), kg:peso}] : [], obs:sh.querySelector('#fObs').value.trim() });
+      toast('Coelho cadastrado no plantel');
+    }
+    save(); sh.close(); render();
+  };
+}
+
+function sparkline(pesos){
+  if(!pesos || pesos.length < 2) return '';
+  const W=220, H=44, p=5;
+  const ps = [...pesos].sort((a,b)=>a.d.localeCompare(b.d));
+  const min = Math.min(...ps.map(x=>x.kg)), max = Math.max(...ps.map(x=>x.kg));
+  const rng = (max-min) || 1;
+  const pts = ps.map((x,i)=> [p + i*(W-2*p)/(ps.length-1), H-p - ((x.kg-min)/rng)*(H-2*p)]);
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="46" style="margin-top:6px">
+    <polyline points="${pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="#2C5233" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    ${pts.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.6" fill="#D96E30"/>`).join('')}</svg>`;
+}
+
+function sheetDetalhe(id){
+  const c = porId(id); if(!c) return;
+  if(!temAcesso() && ehRacaPremium(c.raca)){ abrirVipModal(); return; }
+  const vivo = !['vendido','abatido','morto'].includes(c.status);
+  const car = carenciaCoelho(c);
+  const ultima = db.sanidade.filter(s => s.alvoTipo==='individual' && s.coelhoId===id)
+    .sort((a,b)=>(b.data||'').localeCompare(a.data||''))[0];
+  const gestAtiva = db.acasalamentos.find(g => g.matrizId===id && ['acasalada','prenhe'].includes(g.status));
+  const pelagem = RACA_INFO[c.raca];
+  const sh = openSheet('Ficha do coelho', `
+    <div class="d-head">
+      ${c.foto ? `<img class="d-ava" src="${c.foto}" alt="" style="background:#EFE9DA">` : `<div class="d-ava ${avaCls(c)}">${esc((c.brinco||'?').slice(0,3))}</div>`}
+      <div style="flex:1">
+        <div style="font-family:'Fraunces',serif;font-weight:650;font-size:18px">${esc(c.brinco)}${c.nome?' · '+esc(c.nome):''}</div>
+        <div class="hint">${esc(c.raca||'Raça não informada')} · ${c.sexo==='M'?'Macho':'Fêmea'}${c.jaula?' · Jaula '+esc(c.jaula):''}</div>
+        <span class="st ${c.status}" style="margin-top:5px">${STATUS_L[c.status]}</span>
+      </div>
+    </div>
+    <div class="d-grid">
+      <div class="d-cell"><span>Nascimento</span><b>${fmtData(c.nascimento)}</b></div>
+      <div class="d-cell"><span>Idade</span><b>${idade(c.nascimento)}</b></div>
+      <div class="d-cell"><span>Peso atual</span><b>${c.peso?fmtKg(c.peso):'—'}</b></div>
+      <div class="d-cell"><span>Jaula</span><b>${esc(c.jaula||'—')}</b></div>
+      ${pelagem ? `<div class="d-cell" style="grid-column:1/-1"><span>Pelagem da raça</span><b>${esc(pelagem)}</b></div>` : ''}
+      ${gestAtiva ? `<div class="d-cell" style="grid-column:1/-1;background:var(--green-soft);border-color:#CFDDC4"><span>Gestação em curso</span><b>Parto previsto ${fmtData(gestAtiva.prevista)}</b></div>` : ''}
+      ${ultima ? `<div class="d-cell" style="grid-column:1/-1"><span>Última aplicação</span><b>${esc(ultima.med)} · ${fmtData(ultima.data)}</b></div>` : ''}
+      ${car ? `<div class="d-cell" style="grid-column:1/-1;background:var(--amber-soft);border-color:#E8D3A2"><span>Carência para abate</span><b>${esc(car.med)} · até ${fmtData(car.fim)}</b></div>` : ''}
+    </div>
+    ${sparkline(c.pesos)}
+    ${c.obs ? `<p class="hint" style="margin-top:12px;font-size:13px"><b>Obs.:</b> ${esc(c.obs)}</p>` : ''}
+    <div class="d-acts" style="margin-top:18px">
+      <button class="btn ghost" id="dPeso">${ic('scale',17)} Peso</button>
+      <button class="btn ghost" id="dEdit">${ic('pencil',17)} Editar</button>
+      ${vivo && c.sexo==='F' && c.status==='matriz' ? `<button class="btn ghost" id="dAcasa">${ic('heart',17)} Acasalar</button>` : ''}
+      ${vivo ? `<button class="btn ghost" id="dMed">${ic('syringe',17)} Medicar</button>
+               <button class="btn ghost" id="dAbate">${ic('knife',17)} Abater</button>
+               <button class="btn ghost" id="dVenda">${ic('tag',17)} Vender</button>` : ''}
+      <button class="btn danger-l" id="dDel">${ic('trash',17)} Excluir</button>
+    </div>`);
+  sh.querySelector('#dPeso').onclick = () => { sh.close(); sheetPeso(id); };
+  sh.querySelector('#dEdit').onclick = () => { sh.close(); sheetCoelho(id); };
+  if(vivo){
+    const ac = sh.querySelector('#dAcasa');
+    if(ac) ac.onclick = () => { sh.close(); sheetAcasalamento(id); };
+    sh.querySelector('#dMed').onclick = () => { sh.close(); sheetSanidade({coelhoId:id}); };
+    sh.querySelector('#dAbate').onclick = () => { sh.close(); sheetAbate(id); };
+    sh.querySelector('#dVenda').onclick = () => { sh.close(); sheetVenda({ coelhoId:id, desc:c.brinco + (c.raca? ' — '+c.raca:''), qtd:1, un:'un', preco:'' }); };
+  }
+  sh.querySelector('#dDel').onclick = () => confirmSheet('Excluir coelho',
+    `O registro de ${c.brinco} será apagado junto com seu histórico. Essa ação não pode ser desfeita.`,
+    'Excluir', () => {
+      db.coelhos = db.coelhos.filter(x=>x.id!==id);
+      db.ninhadas = db.ninhadas.filter(n => n.matrizId!==id && n.padraoId!==id);
+      db.acasalamentos = db.acasalamentos.filter(g => g.matrizId!==id && g.padraoId!==id);
+      db.sanidade = db.sanidade.filter(s => s.coelhoId!==id);
+      tarefasSet(tarefasGet().filter(t => t.coelhoId!==id));
+      save(); toast('Registro excluído'); render();
+    });
+}
+
+function sheetPeso(id){
+  const c = porId(id); if(!c) return;
+  const sh = openSheet('Registrar peso — ' + esc(c.brinco), `
+    <div class="form">
+      <div class="fld"><label>Novo peso (kg)</label><input id="pKg" type="number" inputmode="decimal" min="0" step="0.01" value="${c.peso||''}" placeholder="3,50"></div>
+      <button class="btn primary" id="pSal">${ic('check',18)} Salvar peso</button>
+    </div>`, {cls:'mini'});
+  sh.querySelector('#pSal').onclick = () => {
+    const kg = parseFloat(sh.querySelector('#pKg').value);
+    if(!kg || kg<=0) return toast('Informe um peso válido','x',true);
+    c.peso = kg; (c.pesos = c.pesos||[]).push({d:isoHoje(), kg});
+    save(); sh.close(); toast('Peso de '+c.brinco+' atualizado'); render();
+  };
+}
+
+/* ---------- Acasalamento / Gestação ---------- */
+const GESTACAO_DIAS = 31;
+
+function sheetAcasalamento(matrizIdPre){
+  const femeas = db.coelhos.filter(c=>c.sexo==='F' && c.status==='matriz');
+  const machos = db.coelhos.filter(c=>c.sexo==='M' && !['vendido','abatido','morto'].includes(c.status));
+  if(!femeas.length || !machos.length) return toast('Cadastre ao menos uma matriz e um reprodutor','x',true);
+  const sh = openSheet('Novo acasalamento', `
+    <div class="form">
+      <div class="frow">
+        <div class="fld"><label>Matriz *</label><select id="gMae"><option value="">Selecione</option>${femeas.map(c =>
+          `<option value="${c.id}" ${matrizIdPre===c.id?'selected':''}>${esc(c.brinco)}${c.nome?' · '+esc(c.nome):''}</option>`).join('')}</select></div>
+        <div class="fld"><label>Padreador *</label><select id="gPai"><option value="">Selecione</option>${machos.map(c =>
+          `<option value="${c.id}">${esc(c.brinco)}${c.nome?' · '+esc(c.nome):''}</option>`).join('')}</select></div>
+      </div>
+      <div class="fld"><label>Data do acasalamento</label><input id="gData" type="date" value="${isoHoje()}"></div>
+      <p class="hint" id="gPrev"></p>
+      <div class="fld"><label>Observações</label><textarea id="gObs" placeholder="Cobertura confirmada, comportamento…"></textarea></div>
+      <button class="btn primary" id="gSal">${ic('check',18)} Registrar acasalamento</button>
+      <p class="hint" style="text-align:center">A gestação média da coelha dura ${GESTACAO_DIAS} dias. A data prevista é calculada automaticamente.</p>
+    </div>`);
+  const upd = () => {
+    const d = sh.querySelector('#gData').value;
+    sh.querySelector('#gPrev').innerHTML = d ? `Parto previsto: <b>${fmtData(addDias(d, GESTACAO_DIAS))}</b>` : '';
+  };
+  sh.querySelector('#gData').onchange = upd; upd();
+  sh.querySelector('#gSal').onclick = () => {
+    const mae = sh.querySelector('#gMae').value, pai = sh.querySelector('#gPai').value;
+    if(!mae || !pai) return toast('Selecione matriz e padreador','x',true);
+    if(mae === pai) return toast('Matriz e padreador não podem ser o mesmo animal','x',true);
+    const dupla = db.acasalamentos.find(g => g.matrizId===mae && ['acasalada','prenhe'].includes(g.status));
+    if(dupla) return toast('Esta matriz já tem uma gestação em andamento','x',true);
+    const data = sh.querySelector('#gData').value || isoHoje();
+    db.acasalamentos.push({ id:uid(), matrizId:mae, padraoId:pai, data,
+      prevista:addDias(data, GESTACAO_DIAS), status:'acasalada',
+      obs:sh.querySelector('#gObs').value.trim() });
+    save(); sh.close(); toast('Acasalamento registrado'); render();
+  };
+}
+
+function sheetGestDet(id){
+  const g = db.acasalamentos.find(x=>x.id===id); if(!g) return;
+  const hoje = isoHoje();
+  const dias = g.prevista ? Math.round((new Date(g.prevista+'T00:00') - new Date(hoje+'T00:00'))/864e5) : null;
+  const ativa = ['acasalada','prenhe'].includes(g.status);
+  const sh = openSheet('Gestação', `
+    <div class="d-grid">
+      <div class="d-cell"><span>Matriz</span><b>${esc(nomeCoelho(g.matrizId))}</b></div>
+      <div class="d-cell"><span>Padreador</span><b>${esc(nomeCoelho(g.padraoId))}</b></div>
+      <div class="d-cell"><span>Acasalamento</span><b>${fmtData(g.data)}</b></div>
+      <div class="d-cell"><span>Parto previsto</span><b>${fmtData(g.prevista)}</b></div>
+      <div class="d-cell"><span>Status</span><b>${GEST_L[g.status]}</b></div>
+      <div class="d-cell"><span>${dias!==null && dias>=0 ? 'Dias p/ parto' : 'Situação'}</span><b>${ativa ? (dias===null?'—':dias>=0?(dias===0?'Hoje':dias+' d'):'Atrasado '+(dias*-1)+' d') : 'Encerrada'}</b></div>
+    </div>
+    ${g.obs ? `<p class="hint" style="font-size:13px"><b>Obs.:</b> ${esc(g.obs)}</p>` : ''}
+    ${ativa ? `<p class="hint" style="margin-top:10px">A palpação pode ser feita entre o 10º e o 14º dia após o acasalamento.</p>` : ''}
+    <div class="d-acts" style="margin-top:16px">
+      ${g.status==='acasalada' ? `<button class="btn primary" id="gdPrenhe">${ic('check',17)} Confirmar prenhez</button>` : ''}
+      ${ativa ? `<button class="btn primary" id="gdNasc">${ic('eggs',17)} Dar à luz</button>
+                 <button class="btn ghost" id="gdFalha">Registrar falha</button>` : ''}
+      <button class="btn danger-l" id="gdDel">${ic('trash',17)} Excluir</button>
+    </div>`);
+  const pren = sh.querySelector('#gdPrenhe');
+  if(pren) pren.onclick = () => { g.status='prenhe'; save(); sh.close(); toast('Prenhez confirmada'); render(); };
+  const nasc = sh.querySelector('#gdNasc');
+  if(nasc) nasc.onclick = () => { sh.close(); sheetNinhada(null, { matrizId:g.matrizId, padraoId:g.padraoId, gestId:g.id }); };
+  const falha = sh.querySelector('#gdFalha');
+  if(falha) falha.onclick = () => confirmSheet('Registrar falha',
+    'A gestação será encerrada como falha (não houve nascimento).', 'Registrar', () => {
+      g.status='falhou'; save(); sh.close(); toast('Falha registrada'); render();
+    });
+  sh.querySelector('#gdDel').onclick = () => confirmSheet('Excluir gestação',
+    'O registro do acasalamento será apagado.', 'Excluir', () => {
+      db.acasalamentos = db.acasalamentos.filter(x=>x.id!==id);
+      save(); sh.close(); toast('Registro excluído'); render();
+    });
+}
+
+/* ---------- Ninhadas ---------- */
+function sheetNinhada(id, pre){
+  const n = id ? db.ninhadas.find(x=>x.id===id) : null;
+  const femeas = db.coelhos.filter(c=>c.sexo==='F' && c.status==='matriz');
+  const machos = db.coelhos.filter(c=>c.sexo==='M' && !['vendido','abatido','morto'].includes(c.status));
+  const mSel = (n&&n.matrizId) || (pre&&pre.matrizId) || '';
+  const pSel = (n&&n.padraoId) || (pre&&pre.padraoId) || '';
+  const sh = openSheet(n?'Editar ninhada':'Registrar nascimento', `
+    <div class="form">
+      <div class="frow">
+        <div class="fld"><label>Matriz *</label><select id="nMae"><option value="">Selecione</option>${femeas.map(c=>`<option value="${c.id}" ${mSel===c.id?'selected':''}>${esc(c.brinco)}${c.nome?' · '+esc(c.nome):''}</option>`).join('')}</select></div>
+        <div class="fld"><label>Padreador</label><select id="nPai"><option value="">Selecione</option>${machos.map(c=>`<option value="${c.id}" ${pSel===c.id?'selected':''}>${esc(c.brinco)}${c.nome?' · '+esc(c.nome):''}</option>`).join('')}</select></div>
+      </div>
+      <div class="frow">
+        <div class="fld"><label>Nascimento</label><input id="nData" type="date" value="${n?n.nascimento||isoHoje():isoHoje()}"></div>
+        <div class="fld"><label>Nascidos</label><input id="nNasc" type="number" inputmode="numeric" min="0" value="${n?n.nascidos:''}" placeholder="8"></div>
+      </div>
+      <div class="fld"><label>Vivos</label><input id="nVivos" type="number" inputmode="numeric" min="0" value="${n?n.vivos:''}" placeholder="7"></div>
+      <div class="fld"><label>Observações</label><textarea id="nObs" placeholder="Condições do ninho, transferência de filhotes…">${esc(n?n.obs:'')}</textarea></div>
+      <button class="btn primary" id="nSal">${ic('check',18)} Salvar ninhada</button>
+    </div>`);
+  sh.querySelector('#nSal').onclick = () => {
+    const mae = sh.querySelector('#nMae').value;
+    if(!mae) return toast('Selecione a matriz','x',true);
+    const dados = { matrizId:mae, padraoId:sh.querySelector('#nPai').value || null,
+      nascimento:sh.querySelector('#nData').value || isoHoje(),
+      nascidos:parseInt(sh.querySelector('#nNasc').value)||0,
+      vivos:parseInt(sh.querySelector('#nVivos').value)||0,
+      obs:sh.querySelector('#nObs').value.trim() };
+    let novoId;
+    if(n){ Object.assign(n, dados); novoId = n.id; }
+    else { novoId = uid(); db.ninhadas.push({ id:novoId, ...dados }); }
+    if(pre && pre.gestId){
+      const g = db.acasalamentos.find(x=>x.id===pre.gestId);
+      if(g){ g.status = 'nascida'; g.ninhadaId = novoId; }
+    }
+    save(); sh.close(); toast('Ninhada registrada'); render();
+  };
+}
+
+function sheetNinhadaDet(id){
+  const n = db.ninhadas.find(x=>x.id===id); if(!n) return;
+  const sh = openSheet('Ninhada', `
+    <div class="d-grid">
+      <div class="d-cell"><span>Matriz</span><b>${esc(nomeCoelho(n.matrizId))}</b></div>
+      <div class="d-cell"><span>Padreador</span><b>${esc(nomeCoelho(n.padraoId))}</b></div>
+      <div class="d-cell"><span>Nascimento</span><b>${fmtData(n.nascimento)}</b></div>
+      <div class="d-cell"><span>Idade</span><b>${idade(n.nascimento)}</b></div>
+      <div class="d-cell"><span>Nascidos</span><b>${n.nascidos??'—'}</b></div>
+      <div class="d-cell"><span>Vivos</span><b>${n.vivos??'—'}</b></div>
+    </div>
+    ${n.desmame ? `<p class="hint" style="font-size:13px"><b>Desmame:</b> ${fmtData(n.desmame.data)} · ${n.desmame.vivos} filhote(s)</p>` : ''}
+    ${n.obs ? `<p class="hint" style="margin-top:10px;font-size:13px"><b>Obs.:</b> ${esc(n.obs)}</p>` : ''}
+    <div class="d-acts" style="margin-top:18px">
+      <button class="btn ghost" id="ndDesmame">${ic('eggs',17)} ${n.desmame?'Ver/Editar desmame':'Registrar desmame'}</button>
+      <button class="btn ghost" id="ndEdit">${ic('pencil',17)} Editar</button>
+      <button class="btn danger-l" id="ndDel">${ic('trash',17)} Excluir</button>
+    </div>`);
+  sh.querySelector('#ndDesmame').onclick = () => {
+    const s2 = openSheet('Desmame', `
+      <div class="form">
+        <div class="frow">
+          <div class="fld"><label>Data</label><input id="dmData" type="date" value="${n.desmame?n.desmame.data:isoHoje()}"></div>
+          <div class="fld"><label>Filhotes desmamados</label><input id="dmV" type="number" inputmode="numeric" min="0" value="${n.desmame?n.desmame.vivos:n.vivos||''}"></div>
+        </div>
+        <button class="btn primary" id="dmSal">${ic('check',18)} Salvar desmame</button>
+      </div>`, {cls:'mini'});
+    s2.querySelector('#dmSal').onclick = () => {
+      n.desmame = { data:s2.querySelector('#dmData').value || isoHoje(), vivos:parseInt(s2.querySelector('#dmV').value)||0 };
+      save(); s2.close(); sh.close(); toast('Desmame registrado'); render();
+    };
+  };
+  sh.querySelector('#ndEdit').onclick = () => { sh.close(); sheetNinhada(id); };
+  sh.querySelector('#ndDel').onclick = () => confirmSheet('Excluir ninhada','O registro da ninhada será apagado.','Excluir',()=>{
+    db.ninhadas = db.ninhadas.filter(x=>x.id!==id); save(); toast('Ninhada excluída'); render();
+  });
+}
+
+/* ============================================================
+   MANEJO — SANIDADE + ALIMENTAÇÃO + TAREFAS
+   ============================================================ */
+function viewManejo(){
+  $('#view').innerHTML = `
+    <div class="segmini">
+      <button data-ms="sanidade" class="${state.msub==='sanidade'?'on':''}">Sanidade</button>
+      <button data-ms="alimentacao" class="${state.msub==='alimentacao'?'on':''}">Alimentação</button>
+      <button data-ms="tarefas" class="${state.msub==='tarefas'?'on':''}">Tarefas</button>
+    </div>
+    <div id="msubArea"></div>`;
+  $$('#view .segmini button').forEach(b => b.onclick = () => { state.msub = b.dataset.ms; render(); });
+  renderMsub();
+}
+
+function renderMsub(){
+  const area = $('#msubArea'); if(!area) return;
+  if(state.msub === 'sanidade'){
+    const hoje = isoHoje();
+    const carens = ativos()
+      .map(c => ({ c, car:carenciaCoelho(c) }))
+      .filter(x => x.car)
+      .map(x => ({ ...x, dias:Math.round((new Date(x.car.fim+'T00:00') - new Date(hoje+'T00:00'))/864e5) }))
+      .sort((a,b)=>a.dias-b.dias);
+    const mesKey = hoje.slice(0,7);
+    const doMes = db.sanidade.filter(s => (s.data||'').slice(0,7) === mesKey);
+    const lista = [...db.sanidade].sort((a,b)=>(b.data||'').localeCompare(a.data||''));
+    area.innerHTML = `
+      <div class="tira">
+        <div class="stat"><b>${carens.length}</b><span>Em carência</span></div>
+        <div class="stat"><b>${doMes.length}</b><span>Aplic. no mês</span></div>
+        <div class="stat"><b>${db.sanidade.length}</b><span>Total</span></div>
+      </div>
+      ${carens.length ? `<div class="sec-t" style="margin-top:0">Carência de abate em vigor</div><div id="carens">${carens.map(x=>`
+        <div class="carenc-row" data-cid="${x.c.id}">
+          <div class="row-ico">${ic('warn',18)}</div>
+          <div class="row-main"><b>${esc(x.c.brinco)}${x.c.nome?' · '+esc(x.c.nome):''}</b>
+            <span>${esc(x.car.med)} · até ${fmtData(x.car.fim)}</span></div>
+          <div class="row-side"><b>${x.dias}</b><span>dias rest.</span></div>
+        </div>`).join('')}</div>` : ''}
+      <div class="sec-t">Histórico de aplicações</div>
+      <div id="lista">${lista.length ? lista.map(s => {
+        const temCar = (Number(s.carenciaDias)||0) > 0;
+        return `<div class="row" data-id="${s.id}"><div class="row-ico">${ic('syringe',19)}</div>
+          <div class="row-main"><b>${esc(s.med)}</b>
+            <span>${fmtData(s.data)} · ${esc(alvoDesc(s))}${s.dose?' · '+esc(s.dose):''}</span></div>
+          <div class="row-side">${temCar ? `<span class="st carencia">${s.carenciaDias}d</span>` : `<span style="font-size:11px;color:var(--muted)">${esc(s.via||'')}</span>`}</div>
+        </div>`;
+      }).join('') : `<div class="empty">${ic('syringe',32)}<b>Nenhuma aplicação registrada</b><p>Vermifugações, antibióticos e vitaminas ficam anotados aqui, com o período de carência.</p></div>`}</div>`;
+    $$('#carens .carenc-row').forEach(r => r.onclick = () => sheetDetalhe(r.dataset.cid));
+    $$('#lista .row').forEach(r => r.onclick = () => sheetSanidadeDet(r.dataset.id));
+
+  } else if(state.msub === 'alimentacao'){
+    const mesKey = isoHoje().slice(0,7);
+    const doMes = db.alimentacao.filter(a => (a.data||'').slice(0,7) === mesKey);
+    const kgMes = doMes.reduce((s,a)=>s+(Number(a.kg)||0),0);
+    const comCusto = doMes.filter(a => Number(a.custoKg)>0);
+    const custoMes = comCusto.reduce((s,a)=>s + a.kg*a.custoKg, 0);
+    const kgCusto = comCusto.reduce((s,a)=>s+a.kg, 0);
+    const medio = kgCusto>0 ? custoMes/kgCusto : 0;
+    const lista = [...db.alimentacao].sort((a,b)=>(b.data||'').localeCompare(a.data||''));
+    area.innerHTML = `
+      <p class="hint" style="margin:2px 2px 0;line-height:1.5">Como funciona: toque num atalho abaixo (ou em “Registrar ração”), informe <b>qual ração</b>, <b>quantos kg</b> e <b>para quem</b> você deu. O app soma o gasto do mês sozinho.</p>
+      <div class="tira">
+        <div class="stat"><b>${fmtNum(kgMes)} kg</b><span>Dados no mês</span></div>
+        <div class="stat"><b>${custoMes?fmtMoeda(custoMes):'—'}</b><span>Gasto no mês</span></div>
+        <div class="stat"><b>${medio?fmtMoeda(medio):'—'}</b><span>Média R$/kg</span></div>
+      </div>
+      <div class="sec-t" style="margin-top:0">Dar ração para…</div>
+      <div class="chips" style="margin-bottom:14px">
+        <button class="chip" data-g="engorda">Engorda (lote)</button>
+        <button class="chip" data-g="matriz">Matrizes</button>
+        <button class="chip" data-g="reprodutor">Reprodutores</button>
+        <button class="chip" data-g="ativos">Plantel todo</button>
+      </div>
+      <div class="sec-t">Rações dadas</div>
+      <div id="lista">${lista.length ? lista.map(a => {
+        const custo = Number(a.custoKg)>0;
+        return `<div class="row" data-id="${a.id}"><div class="row-ico">${ic('balde',19)}</div>
+          <div class="row-main"><b>${esc(a.racao)} · ${fmtNum(a.kg)} kg</b>
+            <span>${fmtData(a.data)} · para ${esc(alvoDesc(a))}</span></div>
+          <div class="row-side">${custo
+            ? `<b>${fmtMoeda(a.kg*a.custoKg)}</b><span>${fmtMoeda(a.custoKg)}/kg</span>`
+            : `<b>—</b><span>sem custo</span>`}</div>
+        </div>`;
+      }).join('') : `<div class="empty">${ic('balde',32)}<b>Nada registrado ainda</b><p>Use os atalhos “Dar ração para…” acima — abre o formulário já preenchido com a data de hoje.</p></div>`}</div>`;
+    $$('#msubArea .chip[data-g]').forEach(ch => ch.onclick = () => sheetAlimentacao({grupo: ch.dataset.g}));
+    $$('#lista .row').forEach(r => r.onclick = () => sheetAlimentacaoDet(r.dataset.id));
+
+  } else {
+    const hoje = isoHoje();
+    const arr = tarefasGet();
+    const atras = arr.filter(t=>!t.feita && t.data < hoje);
+    const hojeN = arr.filter(t=>!t.feita && t.data === hoje);
+    const futuras = arr.filter(t=>!t.feita && t.data > hoje);
+    const conc = arr.filter(t=>t.feita).slice(-8).reverse();
+    const REP_L = { diario:'repete todo dia', semanal:'repete toda semana', '14dias':'repete a cada 14 dias' };
+    const row = t => `<div class="trow ${t.data<hoje?'atras':t.data===hoje?'hoje2':''}" data-id="${t.id}">
+      <button class="tcheck" data-tk="${t.id}" aria-label="Concluir">${ic('check',17)}</button>
+      <div class="row-main"><b>${esc(t.nome)}</b>
+        <span>${esc(t.tipo||'Tarefa')} · ${fmtData(t.data)}${t.hora?' · '+esc(t.hora):''}${t.repetir&&t.repetir!=='nao'?' · '+REP_L[t.repetir]:''}</span></div>
+      <span class="st ${t.data<hoje?'falhou':t.data===hoje?'acasalada':'prenhe'}">${t.data<hoje?'atrasada':t.data===hoje?'hoje':'agenda'}</span>
+    </div>`;
+    area.innerHTML = `
+      <div class="tira">
+        <div class="stat"><b>${atras.length}</b><span>Atrasadas</span></div>
+        <div class="stat"><b>${hojeN.length}</b><span>Para hoje</span></div>
+        <div class="stat"><b>${futuras.length}</b><span>Pendentes</span></div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin:-2px 2px 12px">
+        <button class="link" id="btnAlarme">${ic('bell',15)} Tocar alarme agora</button>
+      </div>
+      ${atras.length ? `<div class="sec-t" style="margin-top:0">Atrasadas</div>${atras.map(row).join('')}` : ''}
+      ${hojeN.length ? `<div class="sec-t" style="margin-top:0">Para hoje</div>${hojeN.map(row).join('')}` : ''}
+      <div id="lista">${futuras.length ? `<div class="sec-t" style="margin-top:0">Agendadas</div>${futuras.map(row).join('')}`
+        : (atras.length||hojeN.length) ? '' : `<div class="empty">${ic('tarefa',32)}<b>Tudo em ordem</b><p>Nenhuma tarefa pendente.</p></div>`}</div>
+      ${conc.length ? `<div class="sec-t">Concluídas</div>${conc.map(t =>
+        `<div class="trow" style="opacity:.7">
+          <span class="tundo" data-ud="${t.id}" role="button" aria-label="Reabrir">${ic('undo',16)}</span>
+          <div class="row-main"><b style="text-decoration:line-through">${esc(t.nome)}</b>
+            <span>${esc(t.tipo||'Tarefa')} · ${fmtData(t.data)}</span></div>
+          <button class="tundo" data-ex="${t.id}" aria-label="Excluir">${ic('trash',15)}</button>
+        </div>`).join('')}` : ''}`;
+    $$('#msubArea [data-tk]').forEach(b => b.onclick = e => { e.stopPropagation(); concluirTarefa(b.dataset.tk); });
+    $$('#msubArea [data-ud]').forEach(b => b.onclick = e => { e.stopPropagation(); reabrirTarefa(b.dataset.ud); });
+    $$('#msubArea [data-ex]').forEach(b => b.onclick = e => { e.stopPropagation(); excluirTarefa(b.dataset.ex); });
+    const btnAl = $('#btnAlarme');
+    if(btnAl) btnAl.onclick = e => { e.stopPropagation(); tocarAlarme(); };
+    verificarAtrasadas();
+  }
+}
+
+function sheetTarefa(){
+  const sh = openSheet('Nova tarefa', `
+    <div class="form">
+      <div class="fld"><label>O que fazer? *</label><input id="tNome" placeholder="Ex.: Dar remédio"></div>
+      <div class="frow">
+        <div class="fld"><label>Data *</label><input id="tData" type="date" value="${isoHoje()}"></div>
+        <div class="fld"><label>Hora do alarme *</label><input id="tHora" type="time" value="08:00"></div>
+      </div>
+      <div class="fld"><label>Repetir</label><div class="seg" id="tRep">
+        <button data-v="nao" class="on">Não repete</button>
+        <button data-v="diario">Diário</button>
+        <button data-v="semanal">Semanal</button>
+        <button data-v="14dias">14 dias</button>
+      </div></div>
+      <div class="fld"><label>Coelho (opcional)</label><select id="tCoelho"><option value="">—</option>${ativos().map(c =>
+        `<option value="${c.id}">${esc(c.brinco)}${c.raca?' · '+esc(c.raca):''}</option>`).join('')}</select></div>
+      <button class="btn primary" id="tSal">${ic('check',18)} Agendar com alarme</button>
+      <p class="hint" style="text-align:center">No app instalado (APK), o alarme toca na data/hora mesmo com o aplicativo fechado e a tela apagada.</p>
+    </div>`);
+  sh.querySelectorAll('#tRep button').forEach(b => b.onclick = () => {
+    sh.querySelectorAll('#tRep button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+  });
+  sh.querySelector('#tSal').onclick = async () => {
+    const nome = sh.querySelector('#tNome').value.trim();
+    if(!nome) return toast('Descreva a tarefa','x',true);
+    const id = uid();
+    const t = {
+      id, nome,
+      data: sh.querySelector('#tData').value || isoHoje(),
+      hora: sh.querySelector('#tHora').value || '08:00',
+      repetir: sh.querySelector('#tRep .on').dataset.v,
+      feita: false, alarmeTocou: false,
+      tipo: 'Outros cuidados',
+      coelhoId: sh.querySelector('#tCoelho').value || null,
+      notifId: hashId(id) % 2147483000 + 1
+    };
+    const arr = tarefasGet(); arr.push(t); tarefasSet(arr);
+    await lnAgendar(t);
+    save(); sh.close(); toast('Tarefa agendada — alarme na data/hora'); render();
+  };
+}
+
+const selectAlvo = (pre, pfx) => {
+  const sv = pre ? (pre.coelhoId ? 'individual' : (pre.grupo || '')) : '';
+  return `
+  <div class="fld"><label>Para quem?</label>
+    <select id="${pfx}Alvo">
+      <option value="individual" ${sv==='individual'?'selected':''}>Um coelho específico</option>
+      <option value="matriz" ${sv==='matriz'?'selected':''}>Todas as matrizes</option>
+      <option value="reprodutor" ${sv==='reprodutor'?'selected':''}>Todos os reprodutores</option>
+      <option value="engorda" ${sv==='engorda'?'selected':''}>Engorda (lote inteiro)</option>
+      <option value="ativos" ${sv==='ativos'?'selected':''}>Plantel ativo (todo mundo)</option>
+    </select></div>
+  <div class="fld" id="${pfx}CoelhoWrap" ${sv==='individual'?'':'style="display:none"'}><label>Coelho *</label>
+    <select id="${pfx}Coelho"><option value="">Selecione</option>${ativos().map(c =>
+      `<option value="${c.id}" ${pre&&pre.coelhoId===c.id?'selected':''}>${esc(c.brinco)}${c.raca?' · '+esc(c.raca):''}</option>`).join('')}</select></div>`;
+};
+
+function sheetSanidade(pre){
+  const usados = [...new Set(db.sanidade.map(s=>s.med))].filter(m => !MEDS.some(x=>x.n===m));
+  const sh = openSheet('Nova aplicação', `
+    <div class="form">
+      <div class="fld"><label>Medicamento *</label>
+        <select id="mSel">${[...MEDS.map(m=>`<option>${esc(m.n)}</option>`),
+          ...usados.map(m=>`<option>${esc(m)}</option>`), '<option value="__out">Outro…</option>'].join('')}</select></div>
+      <div class="fld" id="mOutWrap" style="display:none"><label>Nome do produto</label><input id="mOut" placeholder="Ex.: Trimexidina"></div>
+      <p class="hint" id="mHint"></p>
+      <div class="frow">
+        <div class="fld"><label>Dose aplicada</label><input id="mDose" placeholder="0,15 mL/kg"></div>
+        <div class="fld"><label>Carência (dias)</label><input id="mCar" type="number" inputmode="numeric" min="0" value="0"></div>
+      </div>
+      <div class="frow">
+        <div class="fld"><label>Data</label><input id="mData" type="date" value="${isoHoje()}"></div>
+        <div class="fld"><label>Via</label><input id="mVia" placeholder="Injetável / Oral / Água"></div>
+      </div>
+      ${selectAlvo(pre,'m')}
+      <div class="fld"><label>Observações</label><textarea id="mObs" placeholder="Sintomas, lote, responsável pela aplicação…"></textarea></div>
+      <button class="btn primary" id="mSal">${ic('check',18)} Registrar aplicação</button>
+      <p class="hint" style="text-align:center">Doses e carências são referenciais — siga sempre a bula e a orientação de um médico-veterinário.</p>
+    </div>`);
+  const sel = sh.querySelector('#mSel');
+  const hint = () => {
+    const m = MEDS.find(x=>x.n===sel.value);
+    sh.querySelector('#mOutWrap').style.display = sel.value==='__out' ? '' : 'none';
+    sh.querySelector('#mHint').innerHTML = m
+      ? `<b>${m.via}</b> · ${m.ind}<br><b>Dose ref.:</b> ${m.dose} · <b>carência:</b> ${m.car ? m.car+' dia(s)' : 'sem'}`
+      : sel.value==='__out' ? 'Produto personalizado — informe via, dose e carência conforme a bula.' : 'Uso já registrado antes — confira dose e carência na bula.';
+    if(m){
+      sh.querySelector('#mDose').value = m.dose;
+      sh.querySelector('#mVia').value = m.via;
+      sh.querySelector('#mCar').value = m.car;
+    }
+  };
+  sel.onchange = hint; hint();
+  const alvoSel = sh.querySelector('#mAlvo');
+  alvoSel.onchange = () => { sh.querySelector('#mCoelhoWrap').style.display = alvoSel.value==='individual' ? '' : 'none'; };
+  sh.querySelector('#mSal').onclick = () => {
+    const alvo = alvoSel.value;
+    const med = sel.value==='__out' ? sh.querySelector('#mOut').value.trim() : sel.value;
+    if(!med) return toast('Informe o medicamento','x',true);
+    const coelhoId = alvo==='individual' ? sh.querySelector('#mCoelho').value : null;
+    if(alvo==='individual' && !coelhoId) return toast('Selecione o coelho','x',true);
+    db.sanidade.push({ id:uid(), data:sh.querySelector('#mData').value || isoHoje(), med,
+      via:sh.querySelector('#mVia').value.trim(), dose:sh.querySelector('#mDose').value.trim(),
+      carenciaDias:parseInt(sh.querySelector('#mCar').value)||0,
+      alvoTipo:alvo, grupo:alvo==='individual'?null:alvo, coelhoId,
+      obs:sh.querySelector('#mObs').value.trim() });
+    save(); sh.close(); toast('Aplicação registrada'); render();
+  };
+}
+
+function sheetSanidadeDet(id){
+  const s = db.sanidade.find(x=>x.id===id); if(!s) return;
+  const fim = (Number(s.carenciaDias)||0)>0 && s.data ? fmtData(addDias(s.data, s.carenciaDias)) : null;
+  const sh = openSheet('Aplicação', `
+    <div class="d-grid">
+      <div class="d-cell"><span>Medicamento</span><b>${esc(s.med)}</b></div>
+      <div class="d-cell"><span>Data</span><b>${fmtData(s.data)}</b></div>
+      <div class="d-cell"><span>Via</span><b>${esc(s.via||'—')}</b></div>
+      <div class="d-cell"><span>Dose</span><b>${esc(s.dose||'—')}</b></div>
+      <div class="d-cell"><span>Aplicado a</span><b>${esc(alvoDesc(s))}</b></div>
+      <div class="d-cell"><span>Carência p/ abate</span><b>${fim ? s.carenciaDias+' d · até '+fim : 'Sem carência'}</b></div>
+    </div>
+    ${s.obs ? `<p class="hint" style="font-size:13px"><b>Obs.:</b> ${esc(s.obs)}</p>` : ''}
+    <div class="d-acts" style="margin-top:16px"><button class="btn danger-l" id="sdDel">${ic('trash',17)} Excluir registro</button></div>`);
+  sh.querySelector('#sdDel').onclick = () => confirmSheet('Excluir aplicação',
+    'O registro será apagado e a carência deixará de valer.', 'Excluir', () => {
+      db.sanidade = db.sanidade.filter(x=>x.id!==id);
+      save(); sh.close(); toast('Registro excluído'); render();
+    });
+}
+
+function sheetAlimentacao(pre){
+  const usadas = [...new Set(db.alimentacao.map(a=>a.racao))].filter(r => !RACOES.some(x=>x.n===r));
+  const sh = openSheet('Registrar alimentação', `
+    <div class="form">
+      <p class="hint" style="margin-top:0">Diga <b>o que</b> você deu, <b>quanto</b> (kg) e <b>para quem</b>. O custo do mês é calculado sozinho.</p>
+      <div class="fld"><label>Qual ração você deu? *</label>
+        <select id="aSel">${[...RACOES.map(r=>`<option>${esc(r.n)}</option>`),
+          ...usadas.map(r=>`<option>${esc(r)}</option>`), '<option value="__out">Outra…</option>'].join('')}</select></div>
+      <div class="fld" id="aOutWrap" style="display:none"><label>Nome / tipo</label><input id="aOut" placeholder="Ex.: Ração da casa"></div>
+      <p class="hint" id="aHint"></p>
+      <div class="frow">
+        <div class="fld"><label>Data</label><input id="aData" type="date" value="${isoHoje()}"></div>
+        <div class="fld"><label>Quantidade (kg) *</label><input id="aKg" type="number" inputmode="decimal" min="0" step="0.01" placeholder="10"></div>
+      </div>
+      <div class="frow">
+        <div class="fld"><label>Custo por kg (opcional)</label><input id="aCusto" type="number" inputmode="decimal" min="0" step="0.01" placeholder="3,50"></div>
+        <div class="fld"><label>Custo total</label><input id="aTot" readonly value="—"></div>
+      </div>
+      ${selectAlvo(pre,'a')}
+      <div class="fld"><label>Observações</label><textarea id="aObs" placeholder="Marca, fornecedor, mudança de fase…"></textarea></div>
+      <button class="btn primary" id="aSal">${ic('check',18)} Registrar alimentação</button>
+    </div>`);
+  const sel = sh.querySelector('#aSel');
+  const hint = () => {
+    const r = RACOES.find(x=>x.n===sel.value);
+    sh.querySelector('#aOutWrap').style.display = sel.value==='__out' ? '' : 'none';
+    sh.querySelector('#aHint').textContent = r ? r.fase : 'Ração personalizada.';
+  };
+  sel.onchange = hint; hint();
+  const recalc = () => {
+    const kg = parseFloat(sh.querySelector('#aKg').value)||0;
+    const c = parseFloat(sh.querySelector('#aCusto').value)||0;
+    sh.querySelector('#aTot').value = (kg && c) ? fmtMoeda(kg*c) : '—';
+  };
+  sh.querySelector('#aKg').addEventListener('input', recalc);
+  sh.querySelector('#aCusto').addEventListener('input', recalc);
+  const alvoSel = sh.querySelector('#aAlvo');
+  alvoSel.onchange = () => { sh.querySelector('#aCoelhoWrap').style.display = alvoSel.value==='individual' ? '' : 'none'; };
+  sh.querySelector('#aSal').onclick = () => {
+    const alvo = alvoSel.value;
+    const racao = sel.value==='__out' ? sh.querySelector('#aOut').value.trim() : sel.value;
+    if(!racao) return toast('Informe a ração','x',true);
+    const kg = parseFloat(sh.querySelector('#aKg').value)||0;
+    if(!kg) return toast('Informe a quantidade em kg','x',true);
+    const coelhoId = alvo==='individual' ? sh.querySelector('#aCoelho').value : null;
+    if(alvo==='individual' && !coelhoId) return toast('Selecione o coelho','x',true);
+    db.alimentacao.push({ id:uid(), data:sh.querySelector('#aData').value || isoHoje(), racao, kg,
+      custoKg:parseFloat(sh.querySelector('#aCusto').value)||null,
+      alvoTipo:alvo, grupo:alvo==='individual'?null:alvo, coelhoId,
+      obs:sh.querySelector('#aObs').value.trim() });
+    save(); sh.close(); toast('Alimentação registrada'); render();
+  };
+}
+
+function sheetAlimentacaoDet(id){
+  const a = db.alimentacao.find(x=>x.id===id); if(!a) return;
+  const total = Number(a.custoKg)>0 ? a.kg*a.custoKg : null;
+  const sh = openSheet('Alimentação registrada', `
+    <div class="d-grid">
+      <div class="d-cell"><span>Ração</span><b>${esc(a.racao)}</b></div>
+      <div class="d-cell"><span>Data</span><b>${fmtData(a.data)}</b></div>
+      <div class="d-cell"><span>Quantidade</span><b>${fmtNum(a.kg)} kg</b></div>
+      <div class="d-cell"><span>Custo/kg</span><b>${a.custoKg?fmtMoeda(a.custoKg):'—'}</b></div>
+      <div class="d-cell"><span>Custo total</span><b>${total?fmtMoeda(total):'—'}</b></div>
+      <div class="d-cell"><span>Para</span><b>${esc(alvoDesc(a))}</b></div>
+    </div>
+    ${a.obs ? `<p class="hint" style="font-size:13px"><b>Obs.:</b> ${esc(a.obs)}</p>` : ''}
+    <div class="d-acts" style="margin-top:16px"><button class="btn danger-l" id="adDel">${ic('trash',17)} Excluir registro</button></div>`);
+  sh.querySelector('#adDel').onclick = () => confirmSheet('Excluir registro',
+    'O registro de ração será apagado.', 'Excluir', () => {
+      db.alimentacao = db.alimentacao.filter(x=>x.id!==id);
+      save(); sh.close(); toast('Registro excluído'); render();
+    });
+}
+
+/* ============================================================
+   ABATES
+   ============================================================ */
+function viewAbates(){
+  const mesKey = isoHoje().slice(0,7);
+  const doMes = db.abates.filter(a => (a.data||'').slice(0,7)===mesKey);
+  const cabecas = doMes.reduce((s,a)=> s + (a.tipo==='lote' ? (a.qtd||0) : 1), 0);
+  const rends = db.abates.filter(a => a.vivo>0 && a.carcaca>0).map(a => a.carcaca/a.vivo*100);
+  const rendMedio = rends.length ? rends.reduce((s,r)=>s+r,0)/rends.length : 0;
+  const lista = [...db.abates].sort((a,b)=>(b.data||'').localeCompare(a.data||''));
+  $('#view').innerHTML = `
+    <div class="tira">
+      <div class="stat"><b>${cabecas}</b><span>Abates no mês</span></div>
+      <div class="stat"><b>${rends.length?rendMedio.toFixed(1).replace('.',',')+'%':'—'}</b><span>Rendimento médio</span></div>
+      <div class="stat"><b>${db.abates.length}</b><span>Total</span></div>
+    </div>
+    <div id="lista">${lista.length ? lista.map(a => {
+      const c = a.coelhoId ? porId(a.coelhoId) : null;
+      const rend = a.vivo>0 && a.carcaca>0 ? (a.carcaca/a.vivo*100).toFixed(1).replace('.',',')+'%' : null;
+      return `<div class="row" data-id="${a.id}"><div class="row-ico">${ic('knife',19)}</div>
+        <div class="row-main"><b>${a.tipo==='lote' ? 'Lote de '+(a.qtd||'?')+' cabeças' : esc(c?c.brinco:'Coelho removido')}</b>
+        <span>${fmtData(a.data)} · vivo ${fmtKg(a.vivo)}${a.carcaca>0?' · carcaça '+fmtKg(a.carcaca):''}</span></div>
+        <div class="row-side"><b>${rend || fmtKg(a.vivo)}</b><span>${esc(a.destino||'')}</span></div></div>`;
+    }).join('') : `<div class="empty">${ic('knife',32)}<b>Nenhum abate registrado</b><p>Toque em “Novo abate” para registrar individual ou em lote.</p></div>`}</div>`;
+  $$('#lista .row').forEach(r => r.onclick = () => sheetAbateDet(r.dataset.id));
+}
+
+function sheetAbateDet(id){
+  const a = db.abates.find(x=>x.id===id); if(!a) return;
+  const c = a.coelhoId ? porId(a.coelhoId) : null;
+  const rend = a.vivo>0 && a.carcaca>0 ? (a.carcaca/a.vivo*100).toFixed(1).replace('.',',')+'%' : '—';
+  const sh = openSheet('Abate', `
+    <div class="d-grid">
+      <div class="d-cell"><span>Data</span><b>${fmtData(a.data)}</b></div>
+      <div class="d-cell"><span>Origem</span><b>${a.tipo==='lote' ? 'Lote · '+(a.qtd||'?')+' cab.' : esc(c?c.brinco:'—')}</b></div>
+      <div class="d-cell"><span>Peso vivo</span><b>${fmtKg(a.vivo)}</b></div>
+      <div class="d-cell"><span>Carcaça</span><b>${a.carcaca>0?fmtKg(a.carcaca):'—'}</b></div>
+      <div class="d-cell"><span>Rendimento</span><b>${rend}</b></div>
+      <div class="d-cell"><span>Destino</span><b>${esc(a.destino||'—')}</b></div>
+    </div>
+    ${a.obs?`<p class="hint" style="font-size:13px"><b>Obs.:</b> ${esc(a.obs)}</p>`:''}
+    <div class="d-acts" style="margin-top:18px">
+      <button class="btn danger-l" id="adDel">${ic('trash',17)} Excluir abate</button>
+    </div>`);
+  sh.querySelector('#adDel').onclick = () => confirmSheet('Excluir abate',
+    'Se o abate estava vinculado a um coelho, ele voltará para a engorda.','Excluir',()=>{
+      if(a.coelhoId){ const cc = porId(a.coelhoId); if(cc && cc.status==='abatido') cc.status='engorda'; }
+      db.abates = db.abates.filter(x=>x.id!==id);
+      save(); sh.close(); toast('Abate excluído'); render();
+    });
+}
+
+function sheetAbate(coelhoIdPre){
+  const candidatos = db.coelhos.filter(c=>c.status==='engorda').sort((a,b)=>(a.brinco||'').localeCompare(b.brinco||'','pt-BR',{numeric:true}));
+  const sh = openSheet('Novo abate', `
+    <div class="form">
+      <div class="seg" id="aTipo">
+        <button data-v="individual" class="on">Individual</button>
+        <button data-v="lote">Lote</button>
+      </div>
+      <div class="fld" id="aCoelhoWrap"><label>Coelho *</label>
+        <select id="aCoelho"><option value="">Selecione</option>${candidatos.map(c =>
+          `<option value="${c.id}" ${coelhoIdPre===c.id?'selected':''}>${esc(c.brinco)}${c.raca?' · '+esc(c.raca):''}${c.peso?' · '+fmtKg(c.peso):''}</option>`).join('')}</select>
+        <p class="hint" id="aPesoHint" style="margin-top:5px"></p></div>
+      <div class="fld" id="aQtdWrap" style="display:none"><label>Quantidade de cabeças *</label>
+        <input id="aQtd" type="number" inputmode="numeric" min="1" placeholder="6"></div>
+      <div class="frow">
+        <div class="fld"><label>Data</label><input id="aData" type="date" value="${isoHoje()}"></div>
+        <div class="fld"><label>Destino</label><select id="aDest">
+          <option>Consumo próprio</option><option selected>Venda</option><option>Encomenda</option></select></div>
+      </div>
+      <div class="frow">
+        <div class="fld"><label>Peso vivo (kg)</label><input id="aVivo" type="number" inputmode="decimal" min="0" step="0.01" placeholder="3,80"></div>
+        <div class="fld"><label>Carcaça (kg, opcional)</label><input id="aCarc" type="number" inputmode="decimal" min="0" step="0.01" placeholder="2,10"></div>
+      </div>
+      <div class="aviso" id="aAviso" style="display:none"></div>
+      <div class="fld"><label>Observações</label><textarea id="aObs" placeholder="Jejum, método, destino das peles…"></textarea></div>
+      <button class="btn primary" id="aSal">${ic('check',18)} Registrar abate</button>
+    </div>`);
+  const seg = sh.querySelector('#aTipo');
+  const av = sh.querySelector('#aAviso');
+  const sel = sh.querySelector('#aCoelho');
+  const avisoInd = () => {
+    const c = porId(sel.value);
+    const car = c && carenciaCoelho(c);
+    av.style.display = car ? '' : 'none';
+    if(car) av.innerHTML = `${ic('warn',16)}<span><b>${esc(c.brinco)}</b> está em carência de <b>${esc(car.med)}</b> até ${fmtData(car.fim)}. O ideal é não abater antes dessa data.</span>`;
+  };
+  const avisoLote = () => {
+    const n = db.coelhos.filter(c => c.status==='engorda' && carenciaCoelho(c)).length;
+    av.style.display = n ? '' : 'none';
+    if(n) av.innerHTML = `${ic('warn',16)}<span><b>${n}</b> coelho(s) em engorda estão em carência de medicamento. Confira em Manejo antes de abater o lote.</span>`;
+  };
+  const hintUp = () => {
+    const c = porId(sel.value);
+    sh.querySelector('#aPesoHint').textContent = c && c.peso ? 'Último peso registrado: '+fmtKg(c.peso) : 'Sem peso registrado';
+    if(c && c.peso && !sh.querySelector('#aVivo').value) sh.querySelector('#aVivo').value = c.peso;
+  };
+  sel.onchange = () => { hintUp(); avisoInd(); };
+  if(coelhoIdPre){ hintUp(); avisoInd(); }
+  const setTipo = v => {
+    seg.querySelectorAll('button').forEach(b=>b.classList.toggle('on', b.dataset.v===v));
+    sh.querySelector('#aCoelhoWrap').style.display = v==='individual' ? '' : 'none';
+    sh.querySelector('#aQtdWrap').style.display = v==='lote' ? '' : 'none';
+    v==='lote' ? avisoLote() : avisoInd();
+  };
+  seg.querySelectorAll('button').forEach(b => b.onclick = () => setTipo(b.dataset.v));
+  sh.querySelector('#aSal').onclick = () => {
+    const vivo = parseFloat(sh.querySelector('#aVivo').value)||0;
+    const carc = parseFloat(sh.querySelector('#aCarc').value)||0;
+    if(!vivo) return toast('Informe o peso vivo','x',true);
+    const tipo = seg.querySelector('.on').dataset.v;
+    const reg = { id:uid(), tipo, data:sh.querySelector('#aData').value || isoHoje(),
+      vivo, carcaca:carc, destino:sh.querySelector('#aDest').value, obs:sh.querySelector('#aObs').value.trim() };
+    if(tipo==='individual'){
+      const c = porId(sel.value);
+      if(!c) return toast('Selecione o coelho','x',true);
+      reg.coelhoId = c.id; c.status = 'abatido';
+    } else {
+      reg.qtd = parseInt(sh.querySelector('#aQtd').value)||0;
+      if(!reg.qtd) return toast('Informe a quantidade','x',true);
+    }
+    db.abates.push(reg); save(); sh.close(); toast('Abate registrado'); render();
+  };
+}
+
+/* ============================================================
+   VENDAS + RECIBO
+   ============================================================ */
+function viewVendas(){
+  const mesKey = isoHoje().slice(0,7);
+  const doMes = db.vendas.filter(v => (v.data||'').slice(0,7)===mesKey);
+  const totalMes = doMes.reduce((s,v)=>s+vendaTotal(v),0);
+  const lista = [...db.vendas].sort((a,b)=>(b.data||'').localeCompare(a.data||'') || (b.num||0)-(a.num||0));
+  let grupos = '', mesAtual = '';
+  lista.forEach(v => {
+    const k = (v.data||'').slice(0,7);
+    if(k !== mesAtual){
+      mesAtual = k;
+      const d = new Date(k+'-02');
+      grupos += `<div class="grp-h">${d.toLocaleDateString('pt-BR',{month:'long'})} de ${d.getFullYear()}</div>`;
+    }
+    grupos += `<div class="row" data-id="${v.id}"><div class="row-ico">${ic('tag',19)}</div>
+      <div class="row-main"><b>#${String(v.num).padStart(4,'0')} · ${esc(v.cliente||'Consumidor')}</b>
+      <span>${v.itens.length} ${v.itens.length>1?'itens':'item'} · ${fmtData(v.data)}</span></div>
+      <div class="row-side"><b>${fmtMoeda(vendaTotal(v))}</b><span>${esc(v.pagamento||'')}</span></div></div>`;
+  });
+  $('#view').innerHTML = `
+    <div class="tira">
+      <div class="stat"><b>${fmtMoeda(totalMes)}</b><span>Faturado no mês</span></div>
+      <div class="stat"><b>${doMes.length}</b><span>Vendas</span></div>
+      <div class="stat"><b>${db.vendas.length}</b><span>Total</span></div>
+    </div>
+    ${lista.length ? grupos : `<div class="empty">${ic('tag',32)}<b>Nenhuma venda ainda</b><p>Monte a primeira venda e emita o recibo em PDF.</p></div>`}`;
+  $$('#view .row').forEach(r => r.onclick = () => sheetRecibo(r.dataset.id));
+}
+
+function pickerCoelho(cb){
+  const p = openSheet('Coelho do plantel', `
+    <div class="search">${ic('search',18)}<input id="pkQ" type="search" placeholder="Buscar brinco ou raça"></div>
+    <div id="pkLista"></div>`);
+  const render = () => {
+    const q = p.querySelector('#pkQ').value.toLowerCase();
+    const lista = ativos().filter(c => ((c.brinco||'')+' '+(c.raca||'')).toLowerCase().includes(q));
+    p.querySelector('#pkLista').innerHTML = lista.length ? lista.map(c =>
+      `<button class="pk-row" data-id="${c.id}" ${(!temAcesso() && ehRacaPremium(c.raca))?'data-vip="1"':''}>
+        ${avaHTML(c,'ava')}
+        <div class="row-main"><b>${esc(c.brinco)}${c.nome?' · '+esc(c.nome):''}</b>
+          <span>${esc(c.raca||'—')} · ${c.peso?fmtKg(c.peso):'sem peso'} · ${STATUS_L[c.status]}</span></div>
+        <span style="color:var(--carrot);flex:none">${ic('plus',18)}</span>
+      </button>`).join('') : `<div class="empty">${bunnySVG('')}<b>Nada encontrado</b><p>Nenhum coelho ativo com essa busca.</p></div>`;
+    p.querySelectorAll('.pk-row').forEach(b => b.onclick = () => {
+      const c = porId(b.dataset.id); p.close(); if(c) cb(c);
+    });
+  };
+  p.querySelector('#pkQ').oninput = render;
+  render();
+}
+
+function sheetVenda(pre){
+  const sh = openSheet('Nova venda', `
+    <div class="form">
+      <div class="frow">
+        <div class="fld"><label>Cliente</label><input id="vCli" list="dlCli" placeholder="Nome do comprador">
+          <datalist id="dlCli">${[...new Set(db.vendas.map(v=>v.cliente).filter(Boolean))].map(c=>`<option>${esc(c)}</option>`).join('')}</datalist></div>
+        <div class="fld"><label>Data</label><input id="vData" type="date" value="${isoHoje()}"></div>
+      </div>
+      <div class="fld"><label>Itens</label>
+        <div class="it-tools">
+          <button id="vAddCoelho">${ic('rabbit',16)}<span>Coelho do plantel</span></button>
+          <button id="vAddLivre" class="sec">${ic('plus',16)}<span>Item livre</span></button>
+        </div>
+        <div id="vItens"></div>
+      </div>
+      <div class="frow">
+        <div class="fld"><label>Desconto (R$)</label><input id="vDesc" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0,00"></div>
+        <div class="fld"><label>Pagamento</label><div class="seg" id="vPag">
+          <button data-v="Dinheiro" class="on">Dinh.</button><button data-v="Pix">Pix</button>
+          <button data-v="Cartão">Cartão</button><button data-v="A prazo">Prazo</button></div></div>
+      </div>
+      <div class="fld"><label>Observações</label><textarea id="vObs" placeholder="Condições, entrega…"></textarea></div>
+    </div>`,
+    { foot:`<div class="vtot"><span>Total da venda</span><b id="vTot">R$ 0,00</b></div>
+            <button class="btn primary" id="vSal" style="flex:none">${ic('check',18)}<span class="serif">Emitir</span></button>` });
+
+  const recalc = () => {
+    let sub = 0;
+    sh.querySelectorAll('.it-row').forEach(r => {
+      sub += (parseFloat(r.querySelector('.i-qtd').value)||0) * (parseFloat(r.querySelector('.i-preco').value)||0);
+    });
+    const desc = parseFloat(sh.querySelector('#vDesc').value)||0;
+    sh.querySelector('#vTot').textContent = fmtMoeda(Math.max(0, sub - desc));
+  };
+
+  const addItem = it => {
+    const row = document.createElement('div'); row.className = 'it-row';
+    row.innerHTML = `<input class="i-desc" placeholder="Descrição" value="${esc(it.desc||'')}" data-cid="${it.coelhoId||''}">
+      <input class="i-qtd" type="number" inputmode="decimal" min="0" step="any" value="${it.qtd ?? 1}">
+      <select class="i-un"><option${(it.un||'un')==='un'?' selected':''}>un</option><option${it.un==='kg'?' selected':''}>kg</option><option${it.un==='cx'?' selected':''}>cx</option></select>
+      <input class="i-preco" type="number" inputmode="decimal" min="0" step="any" placeholder="0,00" value="${it.preco ?? ''}">
+      <button class="i-x" aria-label="Remover item">${ic('x',15)}</button>`;
+    row.querySelector('.i-x').onclick = () => { row.remove(); recalc(); };
+    row.querySelectorAll('input').forEach(i => i.addEventListener('input', recalc));
+    sh.querySelector('#vItens').appendChild(row); recalc();
+  };
+  if(pre) addItem(pre); else addItem({desc:'',qtd:1,un:'un',preco:''});
+  sh.querySelector('#vAddLivre').onclick = () => addItem({desc:'',qtd:1,un:'un',preco:''});
+  sh.querySelector('#vAddCoelho').onclick = () => pickerCoelho(c => {
+    addItem({ coelhoId:c.id, desc:c.brinco + (c.raca? ' — '+c.raca : ''), qtd:1, un:'un', preco:'' });
+    toast(c.brinco + ' adicionado à venda');
+  });
+  sh.querySelector('#vDesc').addEventListener('input', recalc);
+  sh.querySelector('#vPag').querySelectorAll('button').forEach(b => b.onclick = () => {
+    sh.querySelectorAll('#vPag button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+  });
+  sh.querySelector('#vSal').onclick = () => {
+    const itens = [];
+    sh.querySelectorAll('.it-row').forEach(r => {
+      const desc = r.querySelector('.i-desc').value.trim();
+      const qtd = parseFloat(r.querySelector('.i-qtd').value)||0;
+      const preco = parseFloat(r.querySelector('.i-preco').value)||0;
+      if(desc && qtd>0) itens.push({ desc, qtd, un:r.querySelector('.i-un').value, preco, coelhoId:r.querySelector('.i-desc').dataset.cid || null });
+    });
+    if(!itens.length) return toast('Adicione pelo menos um item','x',true);
+    itens.forEach(i => {
+      const c = i.coelhoId ? porId(i.coelhoId) : null;
+      if(c){
+        const san = db.sanidade.filter(s =>
+          s.alvoTipo==='individual' ? s.coelhoId===c.id :
+          (s.grupo==='ativos' || s.grupo===c.status));
+        i.animal = { brinco:c.brinco, raca:c.raca||'', sexo:c.sexo, nascimento:c.nascimento||null,
+          idadeTxt:idade(c.nascimento), peso:c.peso||null, jaula:c.jaula||'',
+          sanidade: san.map(s=>({med:s.med, data:s.data, carenciaDias:Number(s.carenciaDias)||0})) };
+        c.status = 'vendido';
+      }
+    });
+    const pag = sh.querySelector('#vPag .on').dataset.v;
+    const v = { id:uid(), num:proxNum(), data:sh.querySelector('#vData').value || isoHoje(),
+      cliente:sh.querySelector('#vCli').value.trim() || 'Consumidor',
+      itens, desconto:parseFloat(sh.querySelector('#vDesc').value)||0, pagamento:pag,
+      obs:sh.querySelector('#vObs').value.trim(), criadoEm:new Date().toISOString() };
+    db.vendas.push(v); save(); sh.close(); hopBunny();
+    toast('Venda #'+String(v.num).padStart(4,'0')+' emitida'); render(); sheetRecibo(v.id);
+  };
+}
+
+function reciboHTML(v){
+  const S = db.settings;
+  const sub = v.itens.reduce((s,i)=>s+i.qtd*i.preco,0);
+  const contato = [S.cidade, S.telefone].filter(Boolean).join('  ·  ') || 'Gestão de cunicultura';
+  const fichas = v.itens.filter(i=>i.animal);
+  const fichaBloco = i => {
+    const a = i.animal;
+    const apps = a.sanidade||[];
+    return `<div class="ficha">
+      <div class="ficha-h"><b>Brinco ${esc(a.brinco)}</b><span>vendido em ${fmtData(v.data)}</span></div>
+      <div class="ficha-l">Raça: <b>${esc(a.raca||'—')}</b> · ${a.sexo==='M'?'Macho':'Fêmea'} · ${esc(a.idadeTxt||'—')}</div>
+      <div class="ficha-l">Peso: <b>${a.peso?fmtKg(a.peso):'—'}</b> · Nascimento: ${fmtData(a.nascimento)}${a.jaula?' · Jaula '+esc(a.jaula):''}</div>
+      ${apps.length ? apps.map(s=>`<div class="ficha-l">• ${esc(s.med)} — ${fmtData(s.data)}${s.carenciaDias?` · carência até ${fmtData(addDias(s.data,s.carenciaDias))}`:''}</div>`).join('')
+        : '<div class="ficha-l" style="color:var(--muted)">• Sem registros de medicação ou vacinação.</div>'}
+    </div>`;
+  };
+  return `<div class="recibo">
+    <div class="r-head"><div class="r-logo">${bunnySVG('')}</div>
+      <div class="r-name">${esc(S.nome||'Criatório')}</div><div class="r-sub">${esc(contato)}</div></div>
+    <div class="r-title serif">RECIBO DE VENDA<small>documento não fiscal — controle interno</small></div>
+    <div class="r-info">
+      <div class="col"><span>Cliente</span><b>${esc(v.cliente||'Consumidor')}</b></div>
+      <div class="col right"><span>Nº / Data</span><b>#${String(v.num).padStart(4,'0')} · ${fmtData(v.data)}</b></div>
+    </div>
+    <table class="r-items"><thead><tr><th>Descrição</th><th class="num">Qtd</th><th class="num">Unit.</th><th class="num">Valor</th></tr></thead>
+    <tbody>${v.itens.map(i => `<tr><td>${esc(i.desc)}${i.animal?`<div class="r-subline">${esc([i.animal.raca, i.animal.sexo==='M'?'Macho':'Fêmea', i.animal.idadeTxt].filter(Boolean).join(' · '))}</div>`:''}</td>
+      <td class="num">${fmtNum(i.qtd)} ${esc(i.un||'un')}</td>
+      <td class="num">${fmtNum(i.preco)}</td><td class="num"><b>${fmtNum(i.qtd*i.preco)}</b></td></tr>`).join('')}</tbody></table>
+    <div class="r-tots">
+      <div class="tr"><span>Subtotal</span><span>${fmtMoeda(sub)}</span></div>
+      ${v.desconto ? `<div class="tr"><span>Desconto</span><span>− ${fmtMoeda(v.desconto)}</span></div>` : ''}
+      <div class="tr grand"><span>TOTAL</span><span>${fmtMoeda(vendaTotal(v))}</span></div>
+      <div class="tr" style="margin-top:5px"><span>Pagamento</span><span>${esc(v.pagamento||'—')}</span></div>
+    </div>
+    ${fichas.length ? `<div class="sec-t" style="margin-top:14px">Ficha sanitária dos animais vendidos</div>${fichas.map(fichaBloco).join('')}` : ''}
+    ${v.obs?`<div class="r-obs">Obs.: ${esc(v.obs)}</div>`:''}
+    <div class="r-sign"><i></i>Assinatura — ${esc(S.responsavel || S.nome || 'responsável')}</div>
+    <div class="r-foot">Emitido em ${fmtDataHora(new Date())} · Lepus — gestão de cunicultura</div>
+  </div>`;
+}
+
+function sheetRecibo(id){
+  const v = db.vendas.find(x=>x.id===id); if(!v) return;
+  const sh = openSheet('Recibo #'+String(v.num).padStart(4,'0'), reciboHTML(v), {
+    foot:`<button class="btn ghost" id="rShare" ${temAcesso()?'':'data-vip="1"'}>${ic('share',18)} Enviar</button>
+          <button class="btn primary" id="rPdf" ${temAcesso()?'':'data-vip="1"'}>${ic('download',18)} PDF</button>` });
+  const nomeArq = 'Recibo-' + String(v.num).padStart(4,'0') + '.pdf';
+  sh.querySelector('#rPdf').onclick = () => { const blob = buildVendaPdf(v); downloadBlob(blob, nomeArq); toast('PDF gerado'); };
+  sh.querySelector('#rShare').onclick = () => { const blob = buildVendaPdf(v); sharePdf(blob, nomeArq); };
+  sh.querySelector('.sh-body').insertAdjacentHTML('beforeend',
+    `<button class="link" id="rDel" style="display:block;margin:0 auto 6px;background:none;border:none">${ic('trash',14)} Excluir esta venda</button>`);
+  sh.querySelector('#rDel').onclick = () => confirmSheet('Excluir venda',
+    'O recibo será apagado definitivamente. Os animais vendidos permanecem com status “Vendido” e não voltam ao plantel.',
+    'Excluir',()=>{
+      db.vendas = db.vendas.filter(x=>x.id!==id);
+      save(); sh.close(); toast('Venda excluída'); render();
+    });
+}
+
+/* ============================================================
+   GERADOR DE PDF — escrita direta da especificação, sem libs
+   ============================================================ */
+const HELV = [278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,278,278,584,584,584,556,1015,667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,944,667,667,611,278,278,278,469,556,333,556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,278,556,500,722,500,500,500,334,260,334,584];
+function pdfEsc(s){
+  s = String(s ?? '');
+  const mapa = {'\u20AC':128,'\u2013':150,'\u2014':151,'\u2018':145,'\u2019':146,'\u201C':147,'\u201D':148,'\u2022':149,'\u2026':133,'\u0152':140,'\u0153':156,'\u0160':138,'\u0161':154,'\u017D':142,'\u017E':158};
+  let out = '';
+  for(const ch of s){
+    let c = ch.codePointAt(0);
+    if(mapa[ch] !== undefined) c = mapa[ch];
+    else if(c > 255) c = 63;
+    out += String.fromCharCode(c);
+  }
+  return out;
+}
+const pdfTxt = s => pdfEsc(s).replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)');
+function tw(s, f, size){
+  const t = pdfEsc(s); let w = 0;
+  for(let i=0;i<t.length;i++){ const c = t.charCodeAt(i); w += (c>=32 && c<=126) ? HELV[c-32] : 556; }
+  if(f===2) w *= 1.055;
+  return w * size / 1000;
+}
+const r2 = v => Math.round(v*100)/100;
+const PC = { green:'0.118 0.227 0.149', white:'1 1 1', ink:'0.133 0.188 0.118', muted:'0.43 0.47 0.40',
+  cream:'0.949 0.925 0.863', linec:'0.85 0.82 0.74', carrot:'0.851 0.431 0.188' };
+function T(x, y, s, f, size, col, align){
+  let xx = x; const w = tw(s, f, size);
+  if(align === 'c') xx = x - w/2;
+  if(align === 'r') xx = x - w;
+  return `q ${col} rg BT /F${f} ${size} Tf 1 0 0 1 ${r2(xx)} ${r2(y)} Tm (${pdfTxt(s)}) Tj ET Q\n`;
+}
+function R(x, y, w, h, col){ return `q ${col} rg ${r2(x)} ${r2(y)} ${r2(w)} ${r2(h)} re f Q\n`; }
+function St(x, y, w, h, col){ return `q ${col} RG 0.9 w ${r2(x)} ${r2(y)} ${r2(w)} ${r2(h)} re S Q\n`; }
+function L(x1, y1, x2, y2, col, wd){ return `q ${col} RG ${wd} w ${r2(x1)} ${r2(y1)} m ${r2(x2)} ${r2(y2)} l S Q\n`; }
+function truncPdf(s, maxW, f, size){
+  s = String(s ?? '');
+  if(tw(s,f,size) <= maxW) return s;
+  let t = s;
+  while(tw(t,f,size) > maxW && t.length > 2) t = t.slice(0,-2);
+  return t.trim() + '\u2026';
+}
+function ellPDF(cx, cy, rx, ry, ang, col){
+  const co = Math.cos(ang), si = Math.sin(ang);
+  return `q ${col} rg ${r2(rx*co)} ${r2(rx*si)} ${r2(-ry*si)} ${r2(ry*co)} ${r2(cx)} ${r2(cy)} cm ` +
+    `1 0 m 1 0.5523 0.5523 1 0 1 c -0.5523 1 -1 0.5523 -1 0 c -1 -0.5523 -0.5523 -1 0 -1 c 0.5523 -1 1 -0.5523 1 0 c h f Q\n`;
+}
+function logoPDF(cx, cy, r){
+  const s = r/28;
+  let c = '';
+  c += ellPDF(cx, cy, r, r, 0, PC.cream);
+  c += ellPDF(cx-8*s,  cy+14*s, 5.2*s, 12*s, -0.22, PC.green);
+  c += ellPDF(cx+8*s,  cy+14*s, 5.2*s, 12*s,  0.22, PC.green);
+  c += ellPDF(cx, cy-4*s, 13.5*s, 12*s, 0, PC.green);
+  c += ellPDF(cx-5*s,  cy-2*s, 1.5*s, 1.9*s, 0, PC.cream);
+  c += ellPDF(cx+5*s,  cy-2*s, 1.5*s, 1.9*s, 0, PC.cream);
+  c += `q ${PC.carrot} rg ${r2(cx-2.3*s)} ${r2(cy-8*s)} m ${r2(cx+2.3*s)} ${r2(cy-8*s)} l ${r2(cx)} ${r2(cy-10.6*s)} l h f Q\n`;
+  return c;
+}
+const linhaAnimal = a => [a.raca, a.sexo==='M'?'Macho':'Fêmea', a.idadeTxt, a.peso ? fmtKg(a.peso) : null].filter(Boolean).join('  ·  ');
+
+function buildVendaPdf(v){
+  const S = db.settings, W = 595.28, H = 841.89, M = 52, XM = W - M;
+  const sub = v.itens.reduce((s,i)=>s+i.qtd*i.preco,0);
+  const desc = Number(v.desconto)||0, tot = Math.max(0, sub - desc);
+  const brl = n => n.toLocaleString('pt-BR',{minimumFractionDigits:2, maximumFractionDigits:2});
+  const contato = [S.cidade, S.telefone].filter(Boolean).join('   ·   ') || 'Gestão de cunicultura';
+  const fichas = v.itens.filter(i=>i.animal);
+  const numTxt = '#' + String(v.num).padStart(4,'0');
+  const colH = '0.30 0.34 0.28';
+
+  const pages = [];
+  let cur = '', y = 0;
+
+  const startPage = cont => {
+    cur = R(0, H-118, W, 118, PC.green)
+        + logoPDF(M+38, H-59, 28)
+        + T(M+84, H-50, truncPdf(S.nome||'Criatório', 360, 2, 20), 2, 20, PC.white)
+        + T(M+84, H-71, truncPdf(contato, 400, 1, 9), 1, 9, PC.white);
+    y = H - 152;
+    cur += T(W/2, y, 'RECIBO DE VENDA' + (cont ? ' (continuação)' : ''), 2, 15.5, PC.ink, 'c');
+    if(!cont) cur += T(W/2, y-15, 'documento não fiscal — controle interno', 1, 8.5, PC.muted, 'c');
+    y -= cont ? 34 : 44;
+  };
+  const endPage = () => { pages.push(cur); cur = ''; };
+  const need = h => { if(y - h < 66){ endPage(); startPage(true); return true; } return false; };
+  const tabHead = () => {
+    cur += R(M, y-20, XM-M, 20, PC.cream)
+         + T(M+8, y-14, 'DESCRIÇÃO', 2, 7.5, colH)
+         + T(336, y-14, 'QTD', 2, 7.5, colH, 'r')
+         + T(444, y-14, 'UNIT. (R$)', 2, 7.5, colH, 'r')
+         + T(XM-8, y-14, 'VALOR (R$)', 2, 7.5, colH, 'r');
+    y -= 30;
+  };
+
+  startPage(false);
+
+  const bh = 76, bw = XM - M;
+  cur += R(M, y-bh, bw, bh, PC.cream)
+       + T(M+14, y-18, 'CLIENTE', 1, 7, PC.muted)
+       + T(M+14, y-35, truncPdf(v.cliente||'Consumidor', bw-330, 2, 12.5), 2, 12.5, PC.ink)
+       + T(M+14, y-55, 'PAGAMENTO', 1, 7, PC.muted)
+       + T(M+14, y-70, truncPdf(v.pagamento||'—', 240, 2, 10.5), 2, 10.5, PC.ink)
+       + T(M+330, y-18, 'NÚMERO', 1, 7, PC.muted)
+       + T(M+330, y-35, numTxt, 2, 14, PC.carrot)
+       + T(M+330, y-55, 'DATA', 1, 7, PC.muted)
+       + T(M+330, y-70, fmtData(v.data), 2, 10.5, PC.ink);
+  y -= bh + 20;
+  tabHead();
+
+  v.itens.forEach(i => {
+    const a = i.animal, two = !!a;
+    need(two ? 48 : 36);
+    cur += T(M+8, y, truncPdf(i.desc, 250, 2, 10), 2, 10, PC.ink);
+    if(a) cur += T(M+8, y-13, truncPdf(linhaAnimal(a), 250, 1, 7.5), 1, 7.5, PC.muted);
+    cur += T(336, y, fmtNum(i.qtd)+' '+(i.un||'un'), 1, 9.5, PC.ink, 'r')
+         + T(444, y, brl(i.preco), 1, 9.5, PC.ink, 'r')
+         + T(XM-8, y, brl(i.qtd*i.preco), 2, 10, PC.ink, 'r')
+         + L(M, y-(two?22:16), XM, y-(two?22:16), PC.linec, 0.4);
+    y -= two ? 36 : 26;
+  });
+
+  need(130);
+  let yF = y - 8;
+  cur += T(444, yF, 'Subtotal', 1, 9.5, PC.muted, 'r') + T(XM-8, yF, brl(sub), 1, 10, PC.ink, 'r');
+  yF -= 17;
+  if(desc){ cur += T(444, yF, 'Desconto', 1, 9.5, PC.muted, 'r') + T(XM-8, yF, '-'+brl(desc), 1, 10, PC.ink, 'r'); yF -= 17; }
+  cur += R(XM-226, yF-26, 226, 33, PC.green)
+       + T(XM-212, yF-16, 'TOTAL', 2, 10.5, PC.white)
+       + T(XM-14, yF-15, 'R$ ' + brl(tot), 2, 13.5, PC.white, 'r');
+  y = yF - 52;
+  if(v.obs){ need(40); cur += T(M, y, truncPdf('Obs.: '+v.obs, 480, 1, 8.5), 1, 8.5, PC.muted); y -= 26; }
+
+  if(fichas.length){
+    need(80);
+    y -= 12;
+    cur += T(M, y, 'FICHA SANITÁRIA — ANIMAIS VENDIDOS', 2, 10.5, PC.green)
+         + L(M, y-6, XM, y-6, PC.green, 0.8);
+    y -= 24;
+    fichas.forEach(i => {
+      const a = i.animal, apps = a.sanidade || [];
+      const bh2 = 81 + apps.length*13;
+      need(bh2 + 14);
+      cur += St(M, y-bh2, XM-M, bh2, PC.linec)
+           + R(M, y-22, XM-M, 22, PC.cream)
+           + T(M+12, y-15, 'BRINCO  ' + a.brinco, 2, 10.5, PC.ink)
+           + T(XM-12, y-15, 'vendido em ' + fmtData(v.data), 1, 7.5, PC.muted, 'r');
+      let yy = y - 38;
+      cur += T(M+12, yy, truncPdf('Raça: ' + (a.raca||'—') + '   ·   ' + (a.sexo==='M'?'Macho':'Fêmea') + '   ·   ' + (a.idadeTxt||'—'), 460, 1, 8.5), 1, 8.5, PC.ink);
+      yy -= 13;
+      cur += T(M+12, yy, 'Peso: ' + (a.peso ? fmtKg(a.peso) : '—') + '   ·   Nascimento: ' + fmtData(a.nascimento), 1, 8.5, PC.ink);
+      yy -= 18;
+      if(apps.length){
+        cur += T(M+12, yy, 'APLICAÇÕES E VACINAS REGISTRADAS', 1, 6.8, PC.muted);
+        yy -= 13;
+        apps.forEach(s => {
+          const txt = '\u2022  ' + s.med + '  —  ' + fmtData(s.data) +
+            (s.carenciaDias ? '  ·  carência até ' + fmtData(addDias(s.data, s.carenciaDias)) : '  ·  sem carência');
+          cur += T(M+12, yy, truncPdf(txt, 460, 1, 8.5), 1, 8.5, PC.ink);
+          yy -= 13;
+        });
+      } else {
+        cur += T(M+12, yy, 'Sem registros de medicação ou vacinação no período.', 1, 8.5, PC.muted);
+      }
+      y -= bh2 + 14;
+    });
+  }
+
+  need(100);
+  y -= 6;
+  cur += T(W/2, y, 'Obrigado pela preferência!', 2, 11, PC.ink, 'c')
+       + L(W/2-105, y-42, W/2+105, y-42, '0.35 0.39 0.33', 0.7)
+       + T(W/2, y-55, truncPdf('Assinatura — ' + (S.responsavel || S.nome || 'responsável'), 300, 1, 8), 1, 8, PC.muted, 'c');
+  endPage();
+
+  const total = pages.length;
+  const fin = pages.map((c, idx) => c
+    + R(0, 0, W, 30, PC.cream)
+    + T(W/2, 11.5, 'Emitido em ' + fmtDataHora(new Date()) + '  ·  Lepus' + (total>1 ? '  ·  página '+(idx+1)+' de '+total : ''), 1, 7.5, PC.muted, 'c'));
+
+  const nObjs = 4 + fin.length*2;
+  const body = new Array(nObjs+1);
+  body[1] = '<</Type/Catalog/Pages 2 0 R>>';
+  body[2] = `<</Type/Pages/Kids[${fin.map((_,i)=>(5+i*2)+' 0 R').join(' ')}]/Count ${fin.length}>>`;
+  body[3] = '<</Type/Font/Subtype/Type1/BaseFont/Helvetica/Encoding/WinAnsiEncoding>>';
+  body[4] = '<</Type/Font/Subtype/Type1/BaseFont/Helvetica-Bold/Encoding/WinAnsiEncoding>>';
+  fin.forEach((content, i) => {
+    const pid = 5+i*2, cid = pid+1;
+    body[pid] = `<</Type/Page/Parent 2 0 R/MediaBox[0 0 ${W} ${H}]/Resources<</Font<</F1 3 0 R/F2 4 0 R>>>>/Contents ${cid} 0 R>>`;
+    body[cid] = `<</Length ${content.length}>>\nstream\n${content}endstream`;
+  });
+  let out = '%PDF-1.4\n';
+  const offs = [];
+  for(let id=1; id<=nObjs; id++){ offs[id] = out.length; out += `${id} 0 obj\n${body[id]}\nendobj\n`; }
+  const xref = out.length;
+  out += `xref\n0 ${nObjs+1}\n0000000000 65535 f \n`;
+  for(let id=1; id<=nObjs; id++) out += String(offs[id]).padStart(10,'0') + ' 00000 n \n';
+  out += `trailer\n<</Size ${nObjs+1}/Root 1 0 R>>\nstartxref\n${xref}\n%%EOF`;
+  return new Blob([new Uint8Array([...out].map(ch => ch.charCodeAt(0)))], {type:'application/pdf'});
+}
+
+function downloadBlob(blob, nome){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = nome;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+async function sharePdf(blob, nome){
+  try{
+    const file = new File([blob], nome, {type:'application/pdf'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({ files:[file], title:nome });
+      return;
+    }
+  }catch(e){ if(e && e.name === 'AbortError') return; }
+  downloadBlob(blob, nome);
+}
+
+/* ============================================================
+   CONFIGURAÇÕES · STATUS · ALERTAS · BACKUP
+   ============================================================ */
+function sheetConfig(){
+  const S = db.settings;
+  const sh = openSheet('Configurações', `
+    <div class="form">
+      <div class="fld"><label>Nome do criatório *</label><input id="sNome" value="${esc(S.nome)}" placeholder="Sítio Boa Esperança"></div>
+      <div class="frow">
+        <div class="fld"><label>Responsável</label><input id="sResp" value="${esc(S.responsavel)}" placeholder="Seu nome"></div>
+        <div class="fld"><label>Telefone</label><input id="sTel" inputmode="tel" value="${esc(S.telefone)}" placeholder="(19) 99999-0000"></div>
+      </div>
+      <div class="fld"><label>Cidade / UF</label><input id="sCid" value="${esc(S.cidade)}" placeholder="Mogi Guaçu, SP"></div>
+      <div class="fld"><label>Peso-alvo de abate (kg)</label><input id="sAlvo" type="number" inputmode="decimal" min="0" step="0.1" value="${S.pesoAlvo||3.5}"></div>
+      <button class="btn primary" id="sSal">${ic('check',18)} Salvar dados do criatório</button>
+
+      <div class="sec-t">Acesso VIP · Trial 7 dias</div>
+      <div class="stbox" id="vipStatusBox"></div>
+      <div class="clist">
+        <button id="cVip">${ic('sparkle',19)}<span>Gerenciar acesso VIP<small>Ver seu ID, pedir liberação ou digitar código</small></span></button>
+        <button id="cLivro">${ic('db',19)}<span>Mini Livro do Criador<small>Exclusivo VIP — veja o sumário</small></span></button>
+      </div>
+
+      <div class="sec-t">Alertas</div>
+      <div class="clist">
+        <button id="cSom">${ic('bell',19)}<span>Alerta sonoro de tarefas<small id="somHint"></small></span></button>
+        <button id="cSomTest">${ic('bell',19)}<span>Tocar alarme agora<small>Permissões + teste em 10 s (apague a tela)</small></span></button>
+      </div>
+
+      <div class="sec-t">Raças personalizadas</div>
+      <div id="rcArea">
+        ${(S.racasCustom||[]).length ? S.racasCustom.map((r,i) =>
+          `<div class="rc-row"><span>${esc(r)}</span><button data-rc="${i}" aria-label="Remover raça">${ic('trash',16)}</button></div>`).join('')
+          : `<p class="hint">Nenhuma raça extra. As predefinidas já aparecem no cadastro de coelhos.</p>`}
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <input id="rcNova" placeholder="Nova raça…" style="flex:1;min-height:42px;border:1px solid var(--line);border-radius:11px;background:var(--paper);padding:10px 13px;font-size:15px">
+          <button id="rcAdd" class="btn ghost" style="flex:none;min-height:42px">${ic('plus',17)}</button>
+        </div>
+      </div>
+
+      <div class="sec-t">Status</div>
+      <div class="stbox" id="stBox"><span class="hint">Verificando…</span></div>
+
+      <div class="sec-t">App</div>
+      <div class="clist">
+        <button id="cInst">${ic('install',19)}<span>Instalar no aparelho<small id="instHint">Crie um atalho na tela inicial</small></span></button>
+      </div>
+      <div class="sec-t">Dados (ficam salvos neste aparelho)</div>
+      <div class="clist">
+        <button id="cExp">${ic('download',19)}<span>Exportar backup (.json)<small>Guarde uma cópia de segurança</small></span></button>
+        <button id="cImp">${ic('db',19)}<span>Importar backup<small>Restaurar de um arquivo .json</small></span></button>
+        <button id="cExe">${ic('sparkle',19)}<span>Carregar dados de exemplo<small>Para conhecer o app com dados fictícios</small></span></button>
+        <button id="cDel" class="red">${ic('trash',19)}<span>Apagar todos os dados<small>Remove coelhos, manejo, abates e vendas</small></span></button>
+      </div>
+      <input type="file" id="cFile" accept=".json,application/json" style="display:none">
+    </div>`);
+
+  /* Status VIP/trial */
+  const vsb = sh.querySelector('#vipStatusBox');
+  const dT = getDias();
+  vsb.innerHTML = isVip()
+    ? `<div class="l"><span>Acesso</span><b class="ok">VIP ativo ✓</b></div><div class="l"><span>Premium</span><b class="ok">Tudo liberado</b></div>`
+    : (dT <= 7
+      ? `<div class="l"><span>Trial grátis</span><b class="warn">faltam ${Math.ceil(7-dT)} dia(s)</b></div><div class="l"><span>Premium</span><b class="ok">liberado no trial</b></div>`
+      : `<div class="l"><span>Trial</span><b class="err">encerrado</b></div><div class="l"><span>Premium</span><b class="err">bloqueado — ative o VIP</b></div>`);
+
+  const somHint = sh.querySelector('#somHint');
+  const updSom = () => {
+    somHint.textContent = (S.somTarefas === false)
+      ? 'Desligado — toque para ligar'
+      : 'Ligado — toca alto quando há tarefas de hoje ou atrasadas';
+  };
+  updSom();
+  sh.querySelector('#cSom').onclick = () => {
+    S.somTarefas = (S.somTarefas === false);
+    save(); updSom();
+    toast(S.somTarefas === false ? 'Alerta sonoro desligado' : 'Alerta sonoro ligado');
+  };
+  sh.querySelector('#cSomTest').onclick = () => { tocarAlarme(); };
+
+  sh.querySelector('#cVip').onclick = () => { sh.close(); abrirVipModal(); };
+  sh.querySelector('#cLivro').onclick = () => { sh.close(); abrirLivro(0); };
+
+  sh.querySelector('#rcAdd').onclick = () => {
+    const inp = sh.querySelector('#rcNova');
+    const r = inp.value.trim();
+    if(!r) return toast('Digite o nome da raça','x',true);
+    if(racasTodas().some(x => x.toLowerCase() === r.toLowerCase())) return toast('Essa raça já existe','x',true);
+    S.racasCustom.push(r); save();
+    toast('Raça adicionada');
+    sh.close(); sheetConfig();
+  };
+  sh.querySelectorAll('[data-rc]').forEach(b => b.onclick = () => {
+    S.racasCustom.splice(parseInt(b.dataset.rc),1); save(); toast('Raça removida');
+    sh.close(); sheetConfig();
+  });
+
+  (async () => {
+    const box = sh.querySelector('#stBox'); if(!box) return;
+    const L = (k, v, cls) => `<div class="l"><span>${esc(k)}</span><b class="${cls||''}">${esc(v)}</b></div>`;
+    let html = '';
+    if(_LN){
+      html = L('Modo', 'App instalado (APK)', 'ok')
+           + L('Alarme offline', 'Ativo — toca com app fechado e tela apagada', 'ok')
+           + L('Canal', CANAL + ' · ' + SOM, 'ok');
+    } else if(location.protocol === 'file:'){
+      html = L('Modo', 'Arquivo local', 'ok')
+           + L('Alarme', 'Sirene com o app aberto (instale o APK para alarme fechado)', 'warn');
+    } else if(location.protocol.startsWith('http')){
+      let reg = null;
+      if('serviceWorker' in navigator){
+        reg = await navigator.serviceWorker.getRegistration().catch(()=>null);
+      }
+      html += L('Modo', 'PWA (navegador)', 'warn')
+           + L('Alarme offline', 'Requer APK Capacitor — navegador não permite', 'warn')
+           + L('Service Worker', reg ? 'Ativo' : 'Não registrado', reg ? 'ok' : 'warn')
+           + L('Internet agora', navigator.onLine ? 'Online' : 'Offline', navigator.onLine ? '' : 'warn');
+    } else {
+      html = L('Modo', esc(location.protocol), 'warn');
+    }
+    box.innerHTML = html;
+  })();
+
+  sh.querySelector('#sSal').onclick = () => {
+    const nome = sh.querySelector('#sNome').value.trim();
+    if(!nome) return toast('Dê um nome ao criatório','x',true);
+    Object.assign(S, { configurado:true, nome, responsavel:sh.querySelector('#sResp').value.trim(),
+      telefone:sh.querySelector('#sTel').value.trim(), cidade:sh.querySelector('#sCid').value.trim(),
+      pesoAlvo:parseFloat(sh.querySelector('#sAlvo').value)||3.5 });
+    save(); sh.close(); toast('Criatório atualizado'); render();
+  };
+  sh.querySelector('#cExp').onclick = () => {
+    const backup = Object.assign({}, db, { tarefas: tarefasGet() });
+    downloadBlob(new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}),
+      'lepus-backup-' + isoHoje() + '.json');
+    toast('Backup exportado');
+  };
+  sh.querySelector('#cImp').onclick = () => sh.querySelector('#cFile').click();
+  sh.querySelector('#cFile').onchange = e => {
+    const f = e.target.files[0]; if(!f) return;
+    const rd = new FileReader();
+    rd.onload = () => {
+      try{
+        const d = JSON.parse(rd.result);
+        if(!d || !Array.isArray(d.coelhos) || !Array.isArray(d.vendas)) throw 0;
+        db = normalizaDb(d);
+        if(Array.isArray(d.tarefas)) tarefasSet(d.tarefas);
+        migraTarefasDeBackup();
+        save(); sh.close(); toast('Backup restaurado'); render();
+      }catch(err){ toast('Arquivo de backup inválido','x',true); }
+    };
+    rd.readAsText(f);
+  };
+  sh.querySelector('#cExe').onclick = () => confirmSheet('Dados de exemplo',
+    'Serão adicionados coelhos, gestações, tarefas, manejo, abates e vendas fictícios aos seus dados atuais.', 'Carregar', () => {
+      seedExample(); sh.close(); toast('Exemplos carregados'); render();
+    });
+  sh.querySelector('#cDel').onclick = () => confirmSheet('Apagar tudo',
+    'Todos os registros deste aparelho serão perdidos. Exporte um backup antes se quiser guardar.', 'Apagar tudo', () => {
+      localStorage.removeItem(LS); localStorage.removeItem(TAREFAS_KEY);
+      db = dbPadrao(); save(); sh.close(); toast('Dados apagados'); render(); sheetBoasVindas();
+    });
+  const hint = sh.querySelector('#instHint');
+  if(window._installEvt) hint.textContent = 'Toque para adicionar à tela inicial';
+  else if(/iphone|ipad|ipod/i.test(navigator.userAgent) && !navigator.standalone)
+    hint.textContent = 'No iPhone: botão Compartilhar → “Adicionar à Tela de Início”';
+  else hint.textContent = 'Use o menu do navegador → “Instalar app” / “Adicionar à tela inicial”';
+  sh.querySelector('#cInst').onclick = tentarInstalar;
+}
+
+function sheetBoasVindas(){
+  const sh = openSheet('Bem-vindo ao Lepus', `
+    <p class="hint" style="font-size:14px;margin:2px 0 4px">Seu app de cunicultura funciona <b style="color:var(--ink)">100% offline</b>: criação, reprodução, manejo, tarefas com alarme offline, abates, vendas e recibos em PDF. Você tem <b style="color:var(--ink)">7 dias de teste VIP completo</b> — depois, as raças premium ficam atrás do código. Comece contando quem é o seu criatório.</p>
+    <div class="form" style="margin-top:12px">
+      <div class="fld"><label>Nome do criatório *</label><input id="wNome" placeholder="Sítio Boa Esperança"></div>
+      <div class="frow">
+        <div class="fld"><label>Responsável</label><input id="wResp" placeholder="Seu nome"></div>
+        <div class="fld"><label>Telefone</label><input id="wTel" inputmode="tel" placeholder="(19) 99999-0000"></div>
+      </div>
+      <div class="fld"><label>Cidade / UF</label><input id="wCid" placeholder="Mogi Guaçu, SP"></div>
+      <button class="btn primary" id="wSal">${ic('check',18)} Começar</button>
+      <p class="hint" style="text-align:center">Depois você ajusta tudo em Configurações.</p>
+    </div>`, {cls:'mini'});
+  sh.querySelector('#wSal').onclick = () => {
+    const nome = sh.querySelector('#wNome').value.trim();
+    if(!nome) return toast('Dê um nome ao criatório','x',true);
+    Object.assign(db.settings, { configurado:true, nome, responsavel:sh.querySelector('#wResp').value.trim(),
+      telefone:sh.querySelector('#wTel').value.trim(), cidade:sh.querySelector('#wCid').value.trim() });
+    save(); sh.close(); toast('Pronto! Bem-vindo à criação'); render();
+  };
+}
+
+function seedExample(){
+  const C = (brinco,nome,sexo,status,raca,nasc,peso,dPeso,jaula) => ({ id:uid(), brinco, nome, sexo, status, raca,
+    nascimento:diasAtras(nasc), peso, jaula:jaula||'', foto:null,
+    pesos: dPeso ? [{d:diasAtras(dPeso), kg:peso}] : [], obs:'' });
+  const novos = [
+    C('M-01','Aurora','F','matriz','Nova Zelândia Branco',760,4.6,4,'01'),
+    C('M-02','Bruma','F','matriz','Californiano',610,4.2,6,'02'),
+    C('R-01','Titan','M','reprodutor','Nova Zelândia Preto',690,5.1,6,'03'),
+    C('E-101','', 'F','engorda','Nova Zelândia Azul',68,2.2,3,'10'),
+    C('E-102','', 'M','engorda','Nova Zelândia Vermelho',72,2.6,3,'11'),
+    C('E-103','', 'F','engorda','Nova Zelândia Broken',75,3.0,2,'12'),
+    C('E-104','', 'M','engorda','Mestiço',80,3.4,2,'13'),
+    C('E-105','', 'M','engorda','Californiano',84,3.7,1,'14'),
+    C('V-01','', 'F','vendido','Nova Zelândia Branco',150,3.9,10,''),
+    C('A-01','', 'M','abatido','Mestiço',130,3.8,10,'')
+  ];
+  db.coelhos.push(...novos);
+  db.acasalamentos.push(
+    { id:uid(), matrizId:novos[0].id, padraoId:novos[2].id, data:diasAtras(10),
+      prevista:addDias(diasAtras(10), GESTACAO_DIAS), status:'acasalada', obs:'Primeira cobertura da temporada.' }
+  );
+  db.ninhadas.push({ id:uid(), matrizId:novos[1].id, padraoId:novos[2].id, nascimento:diasAtras(28),
+    nascidos:9, vivos:8, obs:'Ninho bem formado, sem perdas.', desmame:null });
+  tarefasSet(tarefasGet().concat([
+    { id:uid(), nome:'Dar remédio', data:diasAtras(1), hora:'08:00', repetir:'diario',
+      feita:false, alarmeTocou:false, tipo:'Outros cuidados', coelhoId:null },
+    { id:uid(), nome:'Trocar água de todas as jaulas', data:isoHoje(), hora:'18:00', repetir:'diario',
+      feita:false, alarmeTocou:false, tipo:'Outros cuidados', coelhoId:null },
+    { id:uid(), nome:'Pesar ninhada da Bruma', data:diasAtras(6), hora:'09:00', repetir:'nao',
+      feita:true, alarmeTocou:true, tipo:'Pesagem', coelhoId:null }
+  ]));
+  db.abates.push(
+    { id:uid(), tipo:'individual', coelhoId:novos[9].id, data:diasAtras(18), vivo:3.8, carcaca:2.05, destino:'Venda', obs:'Jejum de 12h.' },
+    { id:uid(), tipo:'lote', qtd:4, data:diasAtras(46), vivo:14.6, carcaca:7.8, destino:'Consumo próprio', obs:'' }
+  );
+  db.sanidade.push(
+    { id:uid(), data:diasAtras(3),  med:'Enrofloxacina 10%', via:'Injetável', dose:'0,15 mL/kg por 4 dias',
+      carenciaDias:14, alvoTipo:'individual', coelhoId:novos[4].id, obs:'Coriza — aplicar no mesmo horário todos os dias.' },
+    { id:uid(), data:diasAtras(40), med:'Albendazol 10%',    via:'Oral',      dose:'1 mL/5 kg',
+      carenciaDias:14, alvoTipo:'grupo', grupo:'ativos', obs:'Vermifugação de rotina.' },
+    { id:uid(), data:diasAtras(6),  med:'Complexo B',        via:'Injetável', dose:'0,8 mL/animal',
+      carenciaDias:0, alvoTipo:'grupo', grupo:'matriz', obs:'' }
+  );
+  db.alimentacao.push(
+    { id:uid(), data:diasAtras(2),  racao:'Crescimento / Engorda', kg:12, custoKg:3.4, alvoTipo:'grupo', grupo:'engorda', obs:'' },
+    { id:uid(), data:diasAtras(5),  racao:'Lactação',              kg:4,  custoKg:3.9, alvoTipo:'individual', coelhoId:novos[0].id, obs:'Matriz Aurora com ninhada.' },
+    { id:uid(), data:diasAtras(12), racao:'Feno de tifton',        kg:2,  custoKg:6.0, alvoTipo:'grupo', grupo:'ativos', obs:'' }
+  );
+  const venda = (n, dAtras, cliente, itens, desc, pag) =>
+    ({ id:uid(), num:n, data:diasAtras(dAtras), cliente, itens, desconto:desc, pagamento:pag, obs:'', criadoEm:new Date().toISOString() });
+  db.vendas.push(
+    venda(1, 130, 'Frigorífico Boa Vista', [{desc:'Carcaça congelada',qtd:12,un:'kg',preco:24}], 0, 'A prazo'),
+    venda(2, 96, 'Mercearia Dona Lurdes', [{desc:'Coelho vivo — Nova Zelândia Branco',qtd:2,un:'un',preco:120}], 0, 'Dinheiro'),
+    venda(3, 62, 'Restaurante Sabor do Campo', [{desc:'Carcaça fresca',qtd:8,un:'kg',preco:26}], 10, 'Pix'),
+    venda(4, 31, 'Zé dos Ovos', [{desc:'Reprodutor — Nova Zelândia Preto',qtd:1,un:'un',preco:180,
+      animal:{ brinco:'V-01', raca:'Nova Zelândia Preto', sexo:'F', nascimento:diasAtras(150), idadeTxt:'4 a 11 m', peso:3.9, jaula:'',
+        sanidade:[ {med:'Albendazol 10%', data:diasAtras(45), carenciaDias:14},
+                   {med:'Vitamina A·D·E', data:diasAtras(38), carenciaDias:0} ] }}], 0, 'Pix'),
+    venda(5, 9, 'Frigorífico Boa Vista', [{desc:'Carcaça congelada',qtd:15,un:'kg',preco:25}], 0, 'A prazo')
+  );
+  save();
+}
+
+/* ============================================================
+   PWA — fallback em arquivo local + service worker
+   ============================================================ */
+function makeIcon(S, maskable){
+  const c = document.createElement('canvas'); c.width = c.height = S;
+  const x = c.getContext('2d');
+  x.fillStyle = '#1E3A26'; x.fillRect(0,0,S,S);
+  const k = maskable ? 0.68 : 0.92;
+  x.save();
+  x.translate(S/2, S/2); x.scale(k, k); x.translate(-256, -285);
+  x.fillStyle = '#F4EFE4';
+  const ear = (cx, rot) => { x.save(); x.translate(cx, 205); x.rotate(rot);
+    x.beginPath(); x.ellipse(0,0,54,112,0,0,7); x.fill(); x.restore(); };
+  ear(210, -0.24); ear(302, 0.24);
+  x.beginPath(); x.ellipse(256, 356, 130, 120, 0, 0, 7); x.fill();
+  x.fillStyle = '#1E3A26';
+  [[210,338],[302,338]].forEach(([ex,ey]) => { x.beginPath(); x.ellipse(ex, ey, 11, 14, 0, 0, 7); x.fill(); });
+  x.fillStyle = '#D96E30';
+  x.beginPath(); x.moveTo(256, 392); x.lineTo(243, 374); x.lineTo(269, 374); x.closePath(); x.fill();
+  x.restore();
+  return c.toDataURL('image/png');
+}
+function setupPWA(){
+  if(location.protocol === 'file:'){
+    try{
+      document.querySelectorAll('link[rel=manifest]').forEach(l => l.remove());
+      const t = document.createElement('link');
+      t.rel = 'apple-touch-icon'; t.href = makeIcon(180);
+      document.head.appendChild(t);
+      const man = { name:'Lepus — Cunicultura', short_name:'Lepus',
+        description:'Criação, manejo, abates e vendas para cunicultores. Funciona offline.',
+        start_url:'.', display:'standalone', background_color:'#F4EFE4', theme_color:'#1E3A26',
+        icons:[ {src:makeIcon(192), sizes:'192x192', type:'image/png', purpose:'any'},
+                {src:makeIcon(512), sizes:'512x512', type:'image/png', purpose:'any'},
+                {src:makeIcon(512, true), sizes:'512x512', type:'image/png', purpose:'maskable'} ] };
+      const l = document.createElement('link');
+      l.rel = 'manifest';
+      l.href = 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify(man));
+      document.head.appendChild(l);
+    }catch(e){}
+  }
+  if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    });
+  }
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault(); window._installEvt = e; renderHeader();
+  });
+  window.addEventListener('appinstalled', () => {
+    window._installEvt = null; toast('Lepus instalado no aparelho'); renderHeader();
+  });
+}
+function tentarInstalar(){
+  if(window._installEvt){
+    window._installEvt.prompt();
+    window._installEvt.userChoice.finally(() => { window._installEvt = null; renderHeader(); });
+  } else if(/iphone|ipad|ipod/i.test(navigator.userAgent)){
+    toast('No iPhone: Compartilhar → Adicionar à Tela de Início','share');
+  } else {
+    toast('Use o menu do navegador → Instalar app','install');
+  }
+}
+
+/* ============================================================
+   MINI LIVRO DO CRIADOR — exclusivo VIP (livro inteiro)
+   ============================================================ */
+const LIVRO = [
+  { titulo:'Começando certo', pags:[
+    { t:'Escolhendo sua raça', html:`
+      <p>A raça certa depende do seu objetivo — e errar aqui custa meses. Responda três perguntas antes de comprar o primeiro animal:</p>
+      <h3>1. Qual é o seu objetivo?</h3>
+      <ul><li><b>Carne:</b> Nova Zelândia e Californiano — crescimento rápido, boa carcaça.</li>
+      <li><b>Exposição e pedigree:</b> Flandres e Rex — crescimento mais lento, preço por animal muito maior.</li>
+      <li><b>Começar barato:</b> Mestiço — aprende o ofício com menos risco.</li></ul>
+      <h3>2. Quanto tempo você tem?</h3>
+      <p>NZ e Californiano abatem aos 70–90 dias. Flandres só valora depois de 5–6 meses. Se precisa de dinheiro rápido, raça de corte.</p>
+      <h3>3. Onde vai vender?</h3>
+      <p>Perto de frigorífico? Raça de corte, venda por kg. Perto de cidade grande e criadores? Raça de pedigree, venda por animal.</p>
+      <div class="destaque">Regra de ouro: comece com 1 macho e 2–3 fêmeas. Aprenda com poucos, cresça com segurança.</div>` },
+    { t:'As 5 raças de Nova Zelândia', html:`
+      <p>A Nova Zelândia é a raça mais famosa do mundo para carne — e tem 5 pelagens oficiais:</p>
+      <table><tr><th>Variedade</th><th>Como é</th></tr>
+      <tr><td><b>Branco</b></td><td>O mais famoso. Todo branco, olho vermelho/rosa. Padrão de abate mundial.</td></tr>
+      <tr><td><b>Vermelho</b></td><td>Avermelhado brilhante. O menor da raça.</td></tr>
+      <tr><td><b>Preto</b></td><td>Preto azeviche uniforme, fundo azul-ardósia.</td></tr>
+      <tr><td><b>Azul</b></td><td>Cinza-azulado uniforme.</td></tr>
+      <tr><td><b>Broken</b></td><td>Branco com manchas pretas ou vermelhas — o mais chamativo em exposição.</td></tr></table>
+      <div class="destaque">Para carne, o Branco é imbatível. Para vender reprodutores e exposição, Broken e Azul alcançam os melhores preços.</div>` }
+  ]},
+  { titulo:'Reprodução profissional', pags:[
+    { t:'O ciclo da matriz', html:`
+      <p>A coelha gesta em <b>31 dias</b> e pode ter até 8 partidas por ano — mas matriz boa é matriz descansada.</p>
+      <h3>O calendário que funciona</h3>
+      <ul><li><b>Dia 0:</b> acasalamento (leve a fêmea ao macho, nunca o contrário).</li>
+      <li><b>Dia 10–14:</b> palpação — sente-se bolinhas do tamanho de grãos na barriga.</li>
+      <li><b>Dia 28:</b> coloque a caixa de ninho com palha ou feno.</li>
+      <li><b>Dia 31:</b> parto (geralmente de madrugada).</li>
+      <li><b>Dia 28–35 após parto:</b> desmame.</li></ul>
+      <h3>Matriz descansada = ninhada forte</h3>
+      <p>Matriz com ninhada gasta energia dobrada. Intervalo saudável entre partidas: 45–60 dias. Matriz exausta tem filhotes fracos e vida reprodutiva curta.</p>
+      <div class="destaque">Anote tudo no app: a aba Reprodução calcula a data do parto sozinha — use o alerta de "a nascer" para preparar a caixa no dia certo.</div>` },
+    { t:'Descanso e vida reprodutiva', html:`
+      <p>Uma matriz boa rende <b>3 a 4 anos</b> de produção. Os três erros que encurtam essa vida:</p>
+      <ul><li><b>Cobrir toda ninhada:</b> matriz sem descanso entra em falha e abandona os filhotes.</li>
+      <li><b>Não repor:</b> comece a planejar a reposição no 2º ano — as filhas das suas melhores matrizes.</li>
+      <li><b>Macho sobrecarregado:</b> um padreador serve no máximo 8–10 fêmeas. Macho cansado não cobre.</li></ul>
+      <h3>Descarte honesto</h3>
+      <p>Matriz que falha 2 coberturas seguidas, que abandona filhotes duas vezes ou que não amamenta bem: retire do plantel. Matriz ruim custa ração e não devolve.</p>` }
+  ]},
+  { titulo:'Nova Zelândia de A a Z', pags:[
+    { t:'Curva de peso semana a semana', html:`
+      <p>Compare sempre com esta curva — se seu lote está abaixo, revise ração ou sanitidade:</p>
+      <table><tr><th>Idade</th><th>Peso médio</th></tr>
+      <tr><td>Nascimento</td><td>50–70 g</td></tr>
+      <tr><td>21 dias</td><td>400–500 g</td></tr>
+      <tr><td>Desmame (28–35d)</td><td>650–800 g</td></tr>
+      <tr><td>60 dias</td><td>1,6–1,9 kg</td></tr>
+      <tr><td>Abate (80–90d)</td><td>2,5–3,0 kg</td></tr>
+      <tr><td>Adulto (matriz)</td><td>4,0–5,5 kg</td></tr></table>
+      <div class="destaque">Registre o peso no app a cada 2 semanas — a Fila de Abate mostra exatamente quem atingiu a meta.</div>` },
+    { t:'Alimentação por fase', html:`
+      <p>Ração é <b>70% do custo</b> de produzir um coelho. Acertar a fase economiza mais que qualquer outra coisa:</p>
+      <table><tr><th>Fase</th><th>Proteína</th><th>Como dar</th></tr>
+      <tr><td>Desmame–70d</td><td>16–18%</td><td>Ração de crescimento, à vontade</td></tr>
+      <tr><td>Matriz prenhe</td><td>15–16%</td><td>Controlada, 150–180 g/dia</td></tr>
+      <tr><td>Matriz com ninhada</td><td>17–18%</td><td>À vontade — ela come por dois</td></tr>
+      <tr><td>Reprodutor</td><td>14–15%</td><td>120–150 g/dia, sem deixar engordar</td></tr></table>
+      <p><b>Feno sempre à vontade</b> — fibra previne diarreia e desgasta os dentes, que crescem a vida inteira.</p>
+      <div class="destaque">Troca de ração é sempre gradual: 7 dias misturando a antiga com a nova. Troca brusca = diarreia = prejuízo.</div>` },
+    { t:'As 5 doenças que matam', html:`
+      <h3>1. Coccidiose</h3><p><b>Sinal:</b> barriga estufada, diarreia, filhote para de crescer. <b>Prevenção:</b> jaulas secas, ração em cocho (nunca no chão), sulfa no período de risco.</p>
+      <h3>2. Coriza (espirro)</h3><p><b>Sinal:</b> espirro, corrimento no nariz e patas sujas. <b>Prevenção:</b> ventilação sem corrente de ar; isole o doente imediatamente.</p>
+      <h3>3. Sarna</h3><p><b>Sinal:</b> crostas nas orelhas ou patas, coceira intensa. <b>Prevenção:</b> ivermectina preventiva a cada 3–4 meses.</p>
+      <h3>4. Mastite</h3><p><b>Sinal:</b> teta vermelha e quente na matriz amamentando. <b>Prevenção:</b> jaula sem arames expostos, ninho seco.</p>
+      <h3>5. Pasteurelose</h3><p><b>Sinal:</b> sinais de coriza + falta de ar. É a mais grave. <b>Prevenção:</b> estresse é o gatilho — superlotação mata mais que bactéria.</p>
+      <div class="destaque">O app registra cada aplicação e calcula a carência de abate automaticamente — nunca venda carne com resíduo de medicamento.</div>` }
+  ]},
+  { titulo:'Gigante de Flandres', pags:[
+    { t:'Manejo do gigante', html:`
+      <p>O Flandres é outro negócio dentro do negócio. Tratar como NZ é o erro clássico:</p>
+      <ul><li><b>Jaula:</b> mínimo 80×90cm — ele precisa de espaço para virar e esticar.</li>
+      <li><b>Piso:</b> o peso pesa nos pés — piso mais fechado previne feridas nos calos.</li>
+      <li><b>Crescimento:</b> lento e longo. Não compare com a curva da NZ — ele "atravessa" os meses.</li>
+      <li><b>Ração:</b> mais custo por animal, menos proteína (14–16%) e mais fibra.</li></ul>
+      <h3>Reprodução do gigante</h3>
+      <p>Ninhadas menores (6–8 filhotes), partos mais trabalhosos. Nunca case fêmea com macho muito maior — risco de distocia. A fêmea só entra em reprodução depois dos 8–10 meses, quando atinge o tamanho adulto.</p>` },
+    { t:'Curva de peso e mercado', html:`
+      <p>O Flandres vale por <b>tamanho e pedigree</b>, não por carcaça:</p>
+      <table><tr><th>Idade</th><th>Peso</th></tr>
+      <tr><td>3 meses</td><td>2,5–3,0 kg</td></tr>
+      <tr><td>6 meses</td><td>4,5–5,5 kg</td></tr>
+      <tr><td>Adulto macho</td><td>6,5–8,0 kg</td></tr>
+      <tr><td>Adulto fêmea</td><td>6,0–7,0 kg</td></tr></table>
+      <h3>Os 3 clientes do Flandres</h3>
+      <ul><li><b>Criadores:</b> querem reprodutor com pedigree — o animal de melhor preço.</li>
+      <li><b>Exposição:</b> padrões de pelagem e tamanho — exige registro e paciência.</li>
+      <li><b>Carne especial:</b> alguns restaurantes pagam por porção grande — nicho pequeno e bem pago.</li></ul>
+      <div class="destaque">Flandres é negócio de quem tem paciência: o animal leva 1 ano para valer o máximo. Planeje o fluxo de caixa.</div>` }
+  ]},
+  { titulo:'Vender bem', pags:[
+    { t:'Quanto custa produzir 1 coelho', html:`
+      <p>Faça esta conta uma vez e você nunca mais vende no prejuízo:</p>
+      <h3>A conta da matriz</h3>
+      <p>Uma matriz boa: <b>8 filhotes por partida × 4 partidas por ano = 32 filhotes/ano</b>.</p>
+      <ul><li>Ração da matriz + ninhada: ~R$ 40–60/mês = R$ 600/ano</li>
+      <li>Ração de engorda dos 32 filhotes (até 3kg): ~R$ 15–20 por animal</li>
+      <li>Ração do padreador dividida: ~R$ 5 por filhote</li></ul>
+      <p><b>Custo por coelho abatido: cerca de R$ 30–40</b> (com ração a R$ 3,50/kg).</p>
+      <div class="destaque">Use a aba Alimentação do app para saber seu custo real — anote o custo por kg da sua ração e o app soma o mês sozinho.</div>` },
+    { t:'Precificação e clientes fiéis', html:`
+      <h3>Regra da precificação</h3>
+      <p>Preço mínimo = custo × 1,6. Se o coelho custa R$ 35 para produzir, abaixo de R$ 56 você está trabalhando de graça.</p>
+      <h3>A pirâmide de clientes (da pior para a melhor venda)</h3>
+      <ul><li><b>Feira/avulso:</b> preço baixo, cliente infiel, esforço alto.</li>
+      <li><b>Vizinhos e conhecidos:</b> bom volume, pagamento rápido.</li>
+      <li><b>Restaurantes:</b> encomenda mensal, preço por kg melhor — 2 restaurantes fiéis sustentam o criatório.</li>
+      <li><b>Frigorífico:</b> volume constante, preço negociado, entrega programada.</li></ul>
+      <h3>O recibo que fideliza</h3>
+      <p>Entregar <b>recibo impresso com a ficha sanitária do animal</b> transforma você de "vendedor de coelho" em criador profissional. Restaurante e frigorífico compram de quem documenta.</p>
+      <div class="destaque">O app gera esse recibo em PDF com um toque — e é exatamente por isso que ele existe. Conte essa diferença na hora de vender.</div>` }
+  ]}
+];
+
+function abrirLivro(capInicio, pagInicio){
+  const cap = LIVRO[capInicio];
+  if(!cap) return;
+  /* Livro exclusivo VIP: sem acesso, mostra o sumário vendedor + modal */
+  if(!temAcesso()){
+    const sh = openSheet('📖 Mini Livro do Criador', `
+      <div class="pagina" style="background:var(--deep);color:#F4EFE4;border:none;text-align:center">
+        <h2 style="color:#F4EFE4">👑 Mini Livro do Criador</h2>
+        <div class="p-sub" style="color:rgba(244,239,228,.7)">Exclusivo para membros VIP Lepus Negret's</div>
+        <div style="font-size:13px;line-height:1.7;text-align:left;background:rgba(244,239,228,.08);border-radius:14px;padding:14px">
+          <b style="color:#F4EFE4">O que você vai encontrar:</b><br>
+          <span style="color:rgba(244,239,228,.85)">1. Começando certo — escolha de raça + as 5 pelagens da NZ<br>
+          2. Reprodução profissional — ciclo da matriz, palpação, ninho<br>
+          3. Nova Zelândia de A a Z — curva de peso, alimentação por fase, as 5 doenças que matam<br>
+          4. Gigante de Flandres — manejo especial e mercado<br>
+          5. Vender bem — custo por coelho, precificação, clientes fiéis</span>
+        </div>
+        <p class="hint" style="color:rgba(244,239,228,.7);margin-top:12px">VIP inclui também o Mini Livro ilustrado em PDF 📩</p>
+      </div>
+      <button class="btn primary" style="width:100%;margin-top:12px" id="lvVip">👑 Ativar VIP por R$ 49,99</button>`);
+    sh.querySelector('#lvVip').onclick = () => { sh.close(); abrirVipModal(); };
+    return;
+  }
+  const pag = pagInicio || 0;
+  const p = cap.pags[pag];
+  const sh = openSheet('📖 Mini Livro do Criador', `
+    <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;margin-bottom:8px;scrollbar-width:none">
+      ${LIVRO.map((c,i)=>`<button class="chip ${i===capInicio?'on':''}" data-cap="${i}">Cap. ${i+1}</button>`).join('')}
+    </div>
+    <div class="pagina">
+      <h2>${esc(p.t)}</h2>
+      <div class="p-sub">Capítulo ${capInicio+1} · ${esc(cap.titulo)} · página ${pag+1} de ${cap.pags.length}</div>
+      ${p.html}
+    </div>
+    <div class="pag-nav">
+      ${pag>0 ? `<button class="btn ghost" id="lvAnt">← Anterior</button>` : ''}
+      ${pag < cap.pags.length-1
+        ? `<button class="btn primary" id="lvProx">Próxima →</button>`
+        : (capInicio < LIVRO.length-1
+            ? `<button class="btn primary" id="lvProxCap">Próx. capítulo →</button>`
+            : '')}
+    </div>`);
+  sh.querySelectorAll('[data-cap]').forEach(b => b.onclick = () => { sh.close(); abrirLivro(parseInt(b.dataset.cap)); });
+  const ant = sh.querySelector('#lvAnt');
+  if(ant) ant.onclick = () => { sh.close(); abrirLivro(capInicio, pag-1); };
+  const prox = sh.querySelector('#lvProx');
+  if(prox) prox.onclick = () => { sh.close(); abrirLivro(capInicio, pag+1); };
+  const pxc = sh.querySelector('#lvProxCap');
+  if(pxc) pxc.onclick = () => { sh.close(); abrirLivro(capInicio+1, 0); };
+}
+
+/* ============================================================
+   PWA — fallback em arquivo local + service worker
+   ============================================================ */
+function makeIcon(S, maskable){
+  const c = document.createElement('canvas'); c.width = c.height = S;
+  const x = c.getContext('2d');
+  x.fillStyle = '#1E3A26'; x.fillRect(0,0,S,S);
+  const k = maskable ? 0.68 : 0.92;
+  x.save();
+  x.translate(S/2, S/2); x.scale(k, k); x.translate(-256, -285);
+  x.fillStyle = '#F4EFE4';
+  const ear = (cx, rot) => { x.save(); x.translate(cx, 205); x.rotate(rot);
+    x.beginPath(); x.ellipse(0,0,54,112,0,0,7); x.fill(); x.restore(); };
+  ear(210, -0.24); ear(302, 0.24);
+  x.beginPath(); x.ellipse(256, 356, 130, 120, 0, 0, 7); x.fill();
+  x.fillStyle = '#1E3A26';
+  [[210,338],[302,338]].forEach(([ex,ey]) => { x.beginPath(); x.ellipse(ex, ey, 11, 14, 0, 0, 7); x.fill(); });
+  x.fillStyle = '#D96E30';
+  x.beginPath(); x.moveTo(256, 392); x.lineTo(243, 374); x.lineTo(269, 374); x.closePath(); x.fill();
+  x.restore();
+  return c.toDataURL('image/png');
+}
+function setupPWA(){
+  if(location.protocol === 'file:'){
+    try{
+      document.querySelectorAll('link[rel=manifest]').forEach(l => l.remove());
+      const t = document.createElement('link');
+      t.rel = 'apple-touch-icon'; t.href = makeIcon(180);
+      document.head.appendChild(t);
+      const man = { name:'Lepus — Cunicultura', short_name:'Lepus',
+        description:'Criação, manejo, abates e vendas para cunicultores. Funciona offline.',
+        start_url:'.', display:'standalone', background_color:'#F4EFE4', theme_color:'#1E3A26',
+        icons:[ {src:makeIcon(192), sizes:'192x192', type:'image/png', purpose:'any'},
+                {src:makeIcon(512), sizes:'512x512', type:'image/png', purpose:'any'},
+                {src:makeIcon(512, true), sizes:'512x512', type:'image/png', purpose:'maskable'} ] };
+      const l = document.createElement('link');
+      l.rel = 'manifest';
+      l.href = 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify(man));
+      document.head.appendChild(l);
+    }catch(e){}
+  }
+  if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    });
+  }
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault(); window._installEvt = e; renderHeader();
+  });
+  window.addEventListener('appinstalled', () => {
+    window._installEvt = null; toast('Lepus instalado no aparelho'); renderHeader();
+  });
+}
+function tentarInstalar(){
+  if(window._installEvt){
+    window._installEvt.prompt();
+    window._installEvt.userChoice.finally(() => { window._installEvt = null; renderHeader(); });
+  } else if(/iphone|ipad|ipod/i.test(navigator.userAgent)){
+    toast('No iPhone: Compartilhar → Adicionar à Tela de Início','share');
+  } else {
+    toast('Use o menu do navegador → Instalar app','install');
+  }
+}
+
+/* ---------- Início ---------- */
+setupPWA();
+migraTarefasDeBackup();
+render();
+verificarAtrasadas();
+lnAgendarTodas();
+if(!db.settings.configurado) sheetBoasVindas();
+</script>
+<script>
+/* Ligações do modal VIP */
+document.getElementById('btnLiberar').onclick = () => checkVip();
+document.getElementById('vipInput').addEventListener('keydown', e => { if(e.key === 'Enter') checkVip(); });
+document.getElementById('btnVipClose').onclick = () => fecharVipModal();
+</script>
+</body>
+</html>
