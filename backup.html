@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#39412e">
+<title>Central de Backup · Lepus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Outfit:wght@300;400;500;600;700&display=swap">
+<style>
+:root{
+  --header:#39412e; --header2:#2f3726;
+  --bg:#f0ede2; --card:#fbf9f2; --ink:#22301c;
+  --muted:#8f8b76; --green:#3f5c3c; --green-d:#31482f;
+  --border:#e3ded0; --red:#b5493f; --ok:#3e7a46;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:'Outfit',system-ui,sans-serif;min-height:100vh}
+.topo{background:linear-gradient(180deg,var(--header) 0%,var(--header2) 100%);color:#f2efe3;padding:26px 18px 22px}
+.topo-inner{max-width:560px;margin:0 auto;position:relative}
+.topo h1{font-family:'Fraunces',serif;font-weight:600;font-size:1.9rem;letter-spacing:.2px}
+.topo p{font-size:.95rem;color:#cfcaba;margin-top:4px;font-weight:300}
+.volta{position:absolute;top:6px;right:0;color:#d8d4c2;text-decoration:none;font-size:.85rem;border:1px solid #5a6350;padding:7px 12px;border-radius:999px}
+.volta:active{background:#4a5340}
+.pill{display:inline-flex;align-items:center;gap:7px;margin-top:14px;background:#4a5340;border-radius:999px;padding:6px 13px;font-size:.82rem;color:#e6e2d2}
+.pill .pt{width:8px;height:8px;border-radius:50%;background:#8fd49a}
+.pill.off .pt{background:#e08a7f}
+main{max-width:560px;margin:0 auto;padding:6px 16px 40px}
+.rot{font-size:.78rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:26px 4px 10px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+.linha{display:flex;gap:14px;align-items:flex-start;padding:18px 18px}
+.linha+.linha{border-top:1px solid var(--border)}
+.ico{flex:0 0 26px;color:var(--green);margin-top:2px}
+.ico svg{display:block}
+.lt{font-weight:600;font-size:1.02rem}
+.ld{color:var(--muted);font-size:.92rem;margin-top:3px;font-weight:300;line-height:1.45}
+.dados{margin-top:8px;width:100%}
+.dados div{display:flex;justify-content:space-between;gap:10px;font-size:.9rem;padding:4px 0}
+.dados div span:last-child{color:var(--muted);white-space:nowrap}
+.camp{margin:12px 0 0}
+.camp label{display:block;font-size:.82rem;font-weight:600;color:var(--green-d);margin-bottom:5px;letter-spacing:.02em}
+.in{display:flex;align-items:center;background:#fff;border:1.5px solid var(--border);border-radius:13px;overflow:hidden}
+.in:focus-within{border-color:var(--green)}
+.in input{flex:1;border:0;background:none;padding:13px 14px;font:inherit;font-size:.95rem;color:var(--ink);outline:none;min-width:0}
+.olho{border:0;background:none;padding:0 14px;color:var(--muted);cursor:pointer;font-size:.9rem}
+.botao{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;border:0;border-radius:14px;padding:15px 16px;font:inherit;font-weight:600;font-size:1rem;cursor:pointer;margin-top:14px}
+.botao:disabled{opacity:.55;cursor:wait}
+.bt-p{background:var(--green-d);color:#f4f1e4}
+.bt-s{background:none;border:1.5px solid var(--green);color:var(--green-d);box-sizing:border-box}
+.bt-r{background:none;border:1.5px solid var(--red);color:var(--red);box-sizing:border-box}
+.res{font-size:.9rem;margin-top:11px;line-height:1.5;display:none;padding:11px 13px;border-radius:12px}
+.res.on{display:block}
+.res.ok{background:#eaf2e6;color:#2e5a36}
+.res.erro{background:#f7e8e5;color:#9c3f34}
+.res.info{background:#f1eee0;color:#5c5949}
+details{border:1px solid var(--border);border-radius:13px;background:#fff;margin-top:14px}
+summary{padding:13px 15px;font-weight:600;font-size:.9rem;color:var(--green-d);cursor:pointer;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::after{content:'+';float:right;font-weight:400;color:var(--muted)}
+details[open] summary::after{content:'–'}
+details .passo{padding:2px 15px 15px}
+details ol{margin:8px 0 10px 20px;display:grid;gap:8px}
+details li{font-size:.88rem;line-height:1.5;color:#4a5140}
+details a{color:var(--green-d);font-weight:600;word-break:break-all}
+.aviso{display:flex;gap:10px;background:#f4f1e3;border:1px solid #e7e2cd;border-radius:13px;padding:12px 14px;font-size:.85rem;color:#6a6552;line-height:1.5;margin-top:14px}
+.duo{display:flex;gap:10px;margin-top:14px}
+.duo .botao{margin-top:0}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(90px);visibility:hidden;background:#26301f;color:#f2efe3;padding:13px 20px;border-radius:999px;font-size:.92rem;max-width:88vw;text-align:center;transition:transform .25s, visibility .25s;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.toast.on{transform:translateX(-50%) translateY(0);visibility:visible}
+.spin{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:g .7s linear infinite}
+.bt-s .spin,.bt-r .spin,.bt-m .spin{border-color:rgba(0,0,0,.12);border-top-color:var(--green)}
+@keyframes g{to{transform:rotate(360deg)}}
+.rodape{text-align:center;color:var(--muted);font-size:.8rem;padding:8px 18px 30px;line-height:1.6;font-weight:300}
+@media(min-width:520px){.topo h1{font-size:2.2rem}}
+@media(max-width:519px){.volta{position:static;display:inline-flex;margin:12px 0 0}}
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-inner">
+    <h1>Central de Backup</h1>
+    <p>Lepus · Cunicultura — cópia de segurança na nuvem via GitHub</p>
+    <span class="pill" id="pillNet"><span class="pt"></span><span id="pillNetTxt">Verificando internet…</span></span>
+    <a class="volta" href="index.html">Voltar ao app</a>
+  </div>
+</header>
+
+<main>
+  <div class="rot">Dados neste aparelho</div>
+  <div class="card">
+    <div class="linha">
+      <span class="ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5"/><path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3"/></svg></span>
+      <div style="flex:1">
+        <div class="lt">O que será salvo no backup</div>
+        <div class="ld">Plantel, reprodução, manejo, abates, vendas, tarefas, sua chave VIP e o estado do teste de 7 dias — tudo que o app guarda neste aparelho.</div>
+        <div class="dados" id="listaDados"></div>
+        <div class="dados"><div><span><b>Total</b></span><span id="totalDados">—</span></div></div>
+        <div class="dados"><div><span>Último envio para a nuvem</span><span id="ultimoEnvio">nunca</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rot">Conexão com o GitHub</div>
+  <div class="card" style="padding:18px">
+    <div class="camp">
+      <label for="fToken">Personal Access Token (token de acesso)</label>
+      <div class="in">
+        <input id="fToken" type="password" placeholder="cole aqui o seu token" autocomplete="off" spellcheck="false">
+        <button class="olho" id="olhoToken" type="button" aria-label="mostrar ou esconder token">👁</button>
+      </div>
+    </div>
+    <div class="camp">
+      <label for="fRepo">Repositório (usuário/nome)</label>
+      <div class="in"><input id="fRepo" type="text" placeholder="ex.: negrete79/lepus-backup" autocomplete="off" spellcheck="false"></div>
+    </div>
+    <div class="camp">
+      <label for="fPath">Nome do arquivo de backup</label>
+      <div class="in"><input id="fPath" type="text" placeholder="backup-lepus.json" autocomplete="off" spellcheck="false"></div>
+    </div>
+    <button class="botao bt-s" id="btTestar" type="button" style="margin-top:16px">Testar conexão</button>
+    <div class="res" id="resTeste"></div>
+    <details>
+      <summary>Como criar o repositório e o token (leva ~2 min)</summary>
+      <div class="passo">
+        <p style="font-size:.88rem;line-height:1.5;color:#4a5140;margin-top:8px"><b>Passo 1 — criar o repositório da nuvem</b> (só uma vez):</p>
+        <ol>
+          <li>Abra <a href="https://github.com/new" target="_blank" rel="noopener">github.com/new</a> logado na sua conta.</li>
+          <li>Em <b>Repository name</b> escreva: <b>lepus-backup</b>.</li>
+          <li>Marque <b>Private</b> (fica só nos seus olhos).</li>
+          <li>Toque em <b>Create repository</b>. Pronto, anote: <b>seuusuario/lepus-backup</b>.</li>
+        </ol>
+        <p style="font-size:.88rem;line-height:1.5;color:#4a5140;margin-top:12px"><b>Passo 2 — criar o token (a chave que deixa o app gravar lá):</b></p>
+        <ol>
+          <li>Abra <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a>.</li>
+          <li>Em <b>Token name</b> escreva: lepus-backup. Em <b>Expiration</b>, escolha 90 dias ou mais.</li>
+          <li>Em <b>Repository access</b>, escolha <b>Only select repositories</b> e marque <b>lepus-backup</b>.</li>
+          <li>Desça até <b>Permissions → Repository permissions</b>, procure <b>Contents</b> e marque <b>Read and write</b>.</li>
+          <li>Toque em <b>Generate token</b>, copie o código (começa com <b>github_pat_…</b>) e cole no campo acima.</li>
+        </ol>
+        <p style="font-size:.85rem;color:#8f8b76;line-height:1.5">Esse token dá acesso apenas ao repositório de backup — nada mais da sua conta. Se um dia ele vazar, basta apagar lá em Settings → Developer settings.</p>
+      </div>
+    </details>
+  </div>
+  <div class="rot">Enviar para a nuvem</div>
+  <div class="card" style="padding:18px">
+    <div class="linha" style="padding:0">
+      <span class="ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16.2A4.5 4.5 0 0 1 6.5 8a6 6 0 0 1 11.7 1.6A4 4 0 0 1 18 17.5"/><path d="M12 12v9"/><path d="m8.5 15.5 3.5-3.5 3.5 3.5"/></svg></span>
+      <div style="flex:1">
+        <div class="lt">Enviar backup agora</div>
+        <div class="ld">Grava uma cópia completa dos seus dados no repositório do GitHub. Cada envio vira uma versão nova (commit) — dá pra ver o histórico na aba <i>Commits</i> do repositório.</div>
+      </div>
+    </div>
+    <button class="botao bt-p" id="btEnviar" type="button">Enviar backup para a nuvem</button>
+    <div class="res" id="resEnvio"></div>
+  </div>
+
+  <div class="rot">Restaurar da nuvem</div>
+  <div class="card" style="padding:18px">
+    <div class="linha" style="padding:0">
+      <span class="ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16.2A4.5 4.5 0 0 1 6.5 8a6 6 0 0 1 11.7 1.6A4 4 0 0 1 18 17.5"/><path d="M12 21v-9"/><path d="m8.5 15.5 3.5 3.5 3.5-3.5"/></svg></span>
+      <div style="flex:1">
+        <div class="lt">Puxar o último backup</div>
+        <div class="ld">Baixa a versão mais recente da nuvem e <b>substitui todos os dados deste aparelho</b>. Use ao trocar de celular ou após apagar o navegador.</div>
+      </div>
+    </div>
+    <button class="botao bt-r" id="btRestaurar" type="button">Restaurar backup da nuvem</button>
+    <div class="res" id="resRestaurar"></div>
+  </div>
+
+  <div class="rot">Cópias locais (sem internet)</div>
+  <div class="card" style="padding:18px">
+    <div class="ld" style="margin:0 0 2px">Também pode salvar um arquivo .json no próprio aparelho — útil como emergência.</div>
+    <div class="duo">
+      <button class="botao bt-s" id="btBaixar" type="button" style="flex:1">Baixar .json</button>
+      <button class="botao bt-s" id="btImportar" type="button" style="flex:1">Importar .json</button>
+    </div>
+    <input type="file" id="arqImport" accept=".json,application/json" hidden>
+    <div class="res" id="resLocal"></div>
+  </div>
+
+  <div class="aviso">
+    <span>🔒</span>
+    <span><b>Segurança:</b> o token fica gravado somente neste aparelho, junto dos dados do app. Ele não é enviado para lugar nenhum além do GitHub. Nunca compartilhe esse código com ninguém — inclusive comigo: se precisar de ajuda, apague o campo antes.</span>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+<footer class="rodape">Central de Backup do Lepus · v1<br>Esta página precisa de internet para falar com o GitHub. O app Lepus continua funcionando 100% offline, como sempre.</footer>
+<script>
+'use strict';
+/* ============ Central de Backup Lepus ============
+   Página independente na MESMA pasta do app (mesma origem),
+   por isso lê e grava o mesmo localStorage do Lepus
+   sem alterar uma linha sequer do index.html. */
+
+const CHAVES_IGNORAR = ['lepus_gh_token','lepus_gh_repo','lepus_gh_path','lepus_gh_ultimo'];
+const CH_GRAVA = { token:'lepus_gh_token', repo:'lepus_gh_repo', path:'lepus_gh_path', ultimo:'lepus_gh_ultimo' };
+const NOMES = {
+  'lepus_db_v1':'Dados do app (plantel, manejo, vendas…)',
+  'tarefas':'Tarefas agendadas',
+  'lepus_meu_id':'Sua chave VIP',
+  'lepus_inicio':'Início do teste de 7 dias',
+  'lepus_vip':'Status VIP',
+  'coelhos':'Coelhos no plantel',
+  'ninhadas':'Ninhadas',
+  'acasalamentos':'Acasalamentos',
+  'abates':'Abates',
+  'vendas':'Vendas',
+  'sanidade':'Registros de sanidade',
+  'alimentacao':'Alimentação'
+};
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtKB = n => n < 1024 ? n + ' B' : (n/1024).toFixed(1) + ' KB';
+
+/* ---------- toast e resultados ---------- */
+let toastTimer = null;
+function toast(msg){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('on'), 3200);
+}
+function mostraRes(id, tipo, html){
+  $(id).className = 'res on ' + tipo;
+  $(id).innerHTML = html;
+}
+function ocupado(btn, ligar){
+  if(ligar){
+    btn.dataset.txt = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spin"></span> Aguarde…';
+  }else{
+    btn.disabled = false;
+    btn.innerHTML = btn.dataset.txt || btn.innerHTML;
+  }
+}
+
+/* ---------- internet ---------- */
+function atualizaNet(){
+  const on = navigator.onLine;
+  $('pillNet').classList.toggle('off', !on);
+  $('pillNetTxt').textContent = on ? 'Internet ok' : 'Sem internet';
+}
+window.addEventListener('online', atualizaNet);
+window.addEventListener('offline', atualizaNet);
+
+/* ---------- montagem do backup (todas as chaves do app) ----------
+   IMPORTANTE: guardamos os valores CRUS, exatamente como estão no
+   localStorage — sem JSON.parse. Assim a restauração devolve byte a
+   byte o que existia, não importa como o app codificou cada chave. */
+function montaBackup(){
+  const dados = {};
+  for(let i = 0; i < localStorage.length; i++){
+    const k = localStorage.key(i);
+    if(CHAVES_IGNORAR.includes(k)) continue;
+    dados[k] = localStorage.getItem(k);
+  }
+  return { app:'lepus', tipo:'backup-central', versao:2, criadoEm:new Date().toISOString(), dados:dados };
+}
+function aplicaDados(dados){
+  Object.keys(dados).forEach(k => localStorage.setItem(k, String(dados[k])));
+}
+
+/* ---------- painel "Dados neste aparelho" ---------- */
+function descreveDados(){
+  const linhas = [];
+  let total = 0;
+  for(let i = 0; i < localStorage.length; i++){
+    const k = localStorage.key(i);
+    const v = localStorage.getItem(k) || '';
+    total += k.length + v.length;
+    if(CHAVES_IGNORAR.includes(k)) continue;
+    const kb = fmtKB(k.length + v.length);
+    let rotulo = NOMES[k] || k, extra = kb;
+    try{
+      const o = JSON.parse(v);
+      if(k === 'lepus_db_v1' && o && typeof o === 'object' && !Array.isArray(o)){
+        const partes = [];
+        for(const c in o){
+          if(Array.isArray(o[c]) && o[c].length) partes.push((NOMES[c] || c) + ': ' + o[c].length);
+        }
+        if(partes.length) extra = partes.slice(0, 4).join(' · ');
+      }else if(Array.isArray(o)){
+        rotulo = NOMES[k] || k;
+        extra = o.length + ' itens · ' + kb;
+      }else if(k === 'lepus_meu_id' && o){
+        rotulo = 'Sua chave VIP';
+        extra = String(o);
+      }else if(k === 'lepus_inicio' && o){
+        rotulo = 'Início do teste de 7 dias';
+        extra = String(o).slice(0, 10);
+      }
+    }catch(e){
+      /* valor cru (não é JSON): mostra o conteúdo se for a chave VIP */
+      if(k === 'lepus_meu_id') extra = String(v);
+    }
+    linhas.push({ rotulo:rotulo, extra:extra });
+  }
+  return { linhas:linhas, total:total };
+}
+function pintaDados(){
+  const d = descreveDados();
+  $('listaDados').innerHTML = d.linhas.length
+    ? d.linhas.map(l => '<div><span>' + esc(l.rotulo) + '</span><span>' + esc(l.extra) + '</span></div>').join('')
+    : '<div><span>Nenhum dado do Lepus neste navegador ainda</span><span>—</span></div>';
+  $('totalDados').textContent = fmtKB(d.total);
+  const ultimo = localStorage.getItem(CH_GRAVA.ultimo);
+  $('ultimoEnvio').textContent = ultimo ? new Date(ultimo).toLocaleString('pt-BR') : 'nunca';
+}
+
+/* ---------- cópia local (sem internet) ---------- */
+function baixaArquivo(nome, texto){
+  const blob = new Blob([texto], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = nome;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 800);
+}
+$('btBaixar').addEventListener('click', () => {
+  const b = montaBackup();
+  const nome = 'lepus-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  baixaArquivo(nome, JSON.stringify(b));
+  mostraRes('resLocal','ok','Arquivo <b>' + nome + '</b> baixado. Guarde numa pasta segura ou envie para seu e-mail.');
+  toast('Cópia local gerada');
+});
+$('btImportar').addEventListener('click', () => $('arqImport').click());
+$('arqImport').addEventListener('change', ev => {
+  const f = ev.target.files && ev.target.files[0];
+  ev.target.value = '';
+  if(!f) return;
+  const leitor = new FileReader();
+  leitor.onload = () => {
+    try{
+      const obj = JSON.parse(leitor.result);
+      if(!obj || obj.app !== 'lepus' || !obj.dados || typeof obj.dados !== 'object'){
+        mostraRes('resLocal','erro','Este arquivo não é da Central de Backup. Se ele foi exportado pelo próprio app, use o app: Configurações → Importar backup.');
+        return;
+      }
+      if(!confirm('Restaurar esta cópia? Os dados atuais deste aparelho serão substituídos.')) return;
+      aplicaDados(obj.dados);
+      pintaDados();
+      mostraRes('resLocal','ok','Cópia local restaurada. Volte ao app para conferir.');
+      toast('Restaurado com sucesso');
+    }catch(e){
+      mostraRes('resLocal','erro','Não consegui ler o arquivo: ' + esc(e.message));
+    }
+  };
+  leitor.readAsText(f);
+});
+
+/* ---------- configurações ---------- */
+function carregaConf(){
+  $('fToken').value = localStorage.getItem(CH_GRAVA.token) || '';
+  $('fRepo').value  = localStorage.getItem(CH_GRAVA.repo)  || '';
+  $('fPath').value  = localStorage.getItem(CH_GRAVA.path)  || 'backup-lepus.json';
+}
+$('fToken').addEventListener('change', () => localStorage.setItem(CH_GRAVA.token, $('fToken').value.trim()));
+$('fRepo').addEventListener('change',  () => localStorage.setItem(CH_GRAVA.repo,  $('fRepo').value.trim()));
+$('fPath').addEventListener('change',  () => localStorage.setItem(CH_GRAVA.path,  $('fPath').value.trim() || 'backup-lepus.json'));
+$('olhoToken').addEventListener('click', () => {
+  const f = $('fToken');
+  f.type = f.type === 'password' ? 'text' : 'password';
+});
+function pegaConf(){
+  const token = $('fToken').value.trim();
+  const repo = $('fRepo').value.trim()
+    .replace(/^https?:\/\/github\.com\//i, '')
+    .replace(/\.git$/i, '');
+  let path = $('fPath').value.trim() || 'backup-lepus.json';
+  path = path.replace(/^\/+/, '');
+  return { token:token, repo:repo, path:path };
+}
+function validaConf(conf){
+  if(!navigator.onLine){ toast('Sem internet — conecte e tente de novo'); return false; }
+  if(!conf.token){ mostraRes('resTeste','erro','Cole o seu token de acesso (veja o passo a passo acima).'); return false; }
+  if(!/^[\w.-]+\/[\w.-]+$/.test(conf.repo)){ mostraRes('resTeste','erro','O repositório deve estar no formato <b>usuário/nome</b>, ex.: negrete79/lepus-backup.'); return false; }
+  return true;
+}
+/* ---------- API do GitHub ---------- */
+function ghHeaders(token, extra){
+  const h = {
+    'Authorization': 'Bearer ' + token,
+    'Accept': 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28'
+  };
+  if(extra) for(const k in extra) h[k] = extra[k];
+  return h;
+}
+function msgErroHttp(code, contexto){
+  if(code === 401) return 'Token inválido ou expirado. Gere um novo (passo a passo acima) e cole aqui.';
+  if(code === 403) return 'O GitHub recusou a operação. Motivos comuns: token sem a permissão <b>Contents: Read and write</b>, limite de uso da API, ou repositório privado sem acesso pelo token.';
+  if(code === 404) return contexto === 'restaurar'
+    ? 'Não achei o arquivo de backup nesse repositório. Envie um backup primeiro.'
+    : 'Repositório não encontrado. Confira usuário/nome e se o token foi criado com acesso a ele.';
+  if(code === 422) return 'O GitHub não aceitou o envio (conflito de versão). Tente de novo — se insistir, eu ajusto sozinho.';
+  return 'Erro ' + code + ' ao falar com o GitHub. Verifique a internet e tente de novo.';
+}
+async function ghInfoRepositorio(token, repo){
+  const r = await fetch('https://api.github.com/repos/' + repo, { headers: ghHeaders(token) });
+  if(!r.ok) throw { http: r.status };
+  return r.json();
+}
+/* sha do arquivo no repo (é obrigatório para sobrescrever).
+   Se o arquivo for grande demais para a rota normal (>1 MB), plano B: acha o blob pela árvore do git. */
+async function ghAcharSha(token, repo, path){
+  const r = await fetch('https://api.github.com/repos/' + repo + '/contents/' + encodeURI(path), { headers: ghHeaders(token) });
+  if(r.ok){
+    const j = await r.json();
+    return j && j.sha ? j.sha : null;
+  }
+  if(r.status === 404) return null;
+  if(r.status === 403 || r.status === 422){
+    const info = await ghInfoRepositorio(token, repo);
+    const ref = await fetch('https://api.github.com/repos/' + repo + '/git/ref/heads/' + info.default_branch, { headers: ghHeaders(token) });
+    if(!ref.ok) throw { http: ref.status };
+    const commit = await (await fetch('https://api.github.com/repos/' + repo + '/git/commits/' + (await ref.json()).object.sha, { headers: ghHeaders(token) })).json();
+    const tree = await (await fetch('https://api.github.com/repos/' + repo + '/git/trees/' + commit.tree.sha + '?recursive=1', { headers: ghHeaders(token) })).json();
+    const achou = (tree.tree || []).find(t => t.path === path && t.type === 'blob');
+    return achou ? achou.sha : null;
+  }
+  throw { http: r.status };
+}
+function utf8ParaBase64(str){
+  const bytes = new TextEncoder().encode(str);
+  let bin = '';
+  const PASSO = 0x8000;
+  for(let i = 0; i < bytes.length; i += PASSO){
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + PASSO));
+  }
+  return btoa(bin);
+}
+
+/* ---------- ENVIAR ---------- */
+async function enviarBackup(){
+  const conf = pegaConf();
+  if(!validaConf(conf)) return;
+  const btn = $('btEnviar');
+  ocupado(btn, true);
+  try{
+    const texto = JSON.stringify(montaBackup());
+    const b64 = utf8ParaBase64(texto);
+    let sha = await ghAcharSha(conf.token, conf.repo, conf.path);
+    const corpo = { message: 'Backup Lepus — ' + new Date().toLocaleString('pt-BR'), content: b64 };
+    if(sha) corpo.sha = sha;
+    let r = await fetch('https://api.github.com/repos/' + conf.repo + '/contents/' + encodeURI(conf.path), {
+      method: 'PUT',
+      headers: ghHeaders(conf.token, { 'Content-Type': 'application/json' }),
+      body: JSON.stringify(corpo)
+    });
+    if(r.status === 409 || r.status === 422){
+      // o arquivo mudou no meio da operação: recarrega o sha e tenta mais uma vez
+      sha = await ghAcharSha(conf.token, conf.repo, conf.path);
+      if(sha) corpo.sha = sha;
+      r = await fetch('https://api.github.com/repos/' + conf.repo + '/contents/' + encodeURI(conf.path), {
+        method: 'PUT',
+        headers: ghHeaders(conf.token, { 'Content-Type': 'application/json' }),
+        body: JSON.stringify(corpo)
+      });
+    }
+    if(!r.ok) throw { http: r.status };
+    const j = await r.json();
+    const agora = new Date().toISOString();
+    localStorage.setItem(CH_GRAVA.ultimo, agora);
+    localStorage.setItem(CH_GRAVA.token, conf.token);
+    localStorage.setItem(CH_GRAVA.repo, conf.repo);
+    localStorage.setItem(CH_GRAVA.path, conf.path);
+    pintaDados();
+    mostraRes('resEnvio','ok','Backup enviado! Versão <b>' + esc(j.commit.sha.slice(0,7)) + '</b> · ' + fmtKB(texto.length) + ' · ' + new Date(agora).toLocaleString('pt-BR') + '.<br>Veja em github.com/' + esc(conf.repo) + ' → aba Commits.');
+    toast('Backup salvo na nuvem ✓');
+  }catch(e){
+    mostraRes('resEnvio','erro', e && e.http ? msgErroHttp(e.http, 'enviar') : 'Não deu: ' + esc(e.message || e));
+  }finally{
+    ocupado(btn, false);
+  }
+}
+
+/* ---------- RESTAURAR ---------- */
+async function restaurarBackup(){
+  const conf = pegaConf();
+  if(!validaConf(conf)) return;
+  const btn = $('btRestaurar');
+  ocupado(btn, true);
+  try{
+    const r = await fetch('https://api.github.com/repos/' + conf.repo + '/contents/' + encodeURI(conf.path), {
+      headers: ghHeaders(conf.token, { 'Accept': 'application/vnd.github.raw+json' })
+    });
+    if(!r.ok) throw { http: r.status };
+    let obj;
+    try{ obj = JSON.parse(await r.text()); }
+    catch(e){ throw new Error('O arquivo na nuvem está corrompido ou não é um backup válido. Envie um novo backup por cima.'); }
+    if(!obj || obj.app !== 'lepus' || !obj.dados) throw new Error('O arquivo na nuvem existe, mas não é um backup da Central. Envie um backup antes de restaurar.');
+    const quando = obj.criadoEm ? new Date(obj.criadoEm).toLocaleString('pt-BR') : 'data desconhecida';
+    const itens = Object.keys(obj.dados).length;
+    if(!confirm('Este backup é de ' + quando + ' (' + itens + ' blocos de dados).\n\nRestaurar agora? Os dados ATUAIS deste aparelho serão substituídos.')) return;
+    aplicaDados(obj.dados);
+    pintaDados();
+    mostraRes('resRestaurar','ok','Restaurado do backup de <b>' + esc(quando) + '</b>. Feche e abra o app Lepus para ver tudo no lugar.');
+    toast('Dados restaurados ✓');
+  }catch(e){
+    mostraRes('resRestaurar','erro', e && e.http ? msgErroHttp(e.http, 'restaurar') : 'Não deu: ' + esc(e.message || e));
+  }finally{
+    ocupado(btn, false);
+  }
+}
+
+/* ---------- TESTAR ---------- */
+async function testarConexao(){
+  const conf = pegaConf();
+  if(!validaConf(conf)) return;
+  const btn = $('btTestar');
+  ocupado(btn, true);
+  try{
+    const info = await ghInfoRepositorio(conf.token, conf.repo);
+    localStorage.setItem(CH_GRAVA.token, conf.token);
+    localStorage.setItem(CH_GRAVA.repo, conf.repo);
+    localStorage.setItem(CH_GRAVA.path, conf.path);
+    if(info.permissions && info.permissions.push){
+      mostraRes('resTeste','ok','Conectado a <b>' + esc(info.full_name) + '</b> (' + (info.private ? 'privado' : 'público') + ') — você tem permissão de gravação. Tudo pronto para enviar e restaurar.');
+      toast('Conexão OK ✓');
+    }else{
+      mostraRes('resTeste','erro','O repositório <b>' + esc(info.full_name) + '</b> existe, mas o token NÃO tem permissão de gravação. Refaça o passo 2 marcando <b>Contents: Read and write</b>.');
+    }
+  }catch(e){
+    mostraRes('resTeste','erro', e && e.http ? msgErroHttp(e.http, 'testar') : 'Não consegui falar com o GitHub: ' + esc(e.message || e));
+  }finally{
+    ocupado(btn, false);
+  }
+}
+
+$('btEnviar').addEventListener('click', enviarBackup);
+$('btRestaurar').addEventListener('click', restaurarBackup);
+$('btTestar').addEventListener('click', testarConexao);
+
+carregaConf();
+atualizaNet();
+pintaDados();
+</script>
+</body>
+</html>
